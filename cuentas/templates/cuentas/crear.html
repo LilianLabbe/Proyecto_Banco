@@ -1,0 +1,148 @@
+{% extends 'cuentas/base.html' %}
+
+{% block title %}
+Abre tu cuenta
+{% endblock %}
+
+{% block contenido %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-8">
+
+        <div class="card p-4 p-md-5">
+
+            <div class="mb-4">
+
+                <h2 class="fw-bold mb-2">
+                    Abre tu cuenta
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Ingresa tus datos y revisaremos el producto
+                    disponible según tu perfil.
+                </p>
+
+            </div>
+
+
+            <div class="alert alert-light border mb-4">
+
+                <strong>Requisitos del proyecto:</strong>
+
+                <ul class="mb-0 mt-2">
+                    <li>
+                        Cuenta Débito:
+                        <strong>sin renta mínima.</strong>
+                    </li>
+
+                    <li>
+                        Cuenta Corriente:
+                        <strong>renta mínima de $600.000.</strong>
+                    </li>
+
+                    <li>
+                        Línea de Crédito:
+                        <strong>disponible desde $900.000.</strong>
+                    </li>
+                </ul>
+
+                <small class="text-muted d-block mt-2">
+                    Estos montos corresponden a reglas académicas
+                    definidas para este proyecto.
+                </small>
+
+            </div>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                {% if formulario.non_field_errors %}
+
+                    <div class="alert alert-danger">
+
+                        {% for error in formulario.non_field_errors %}
+                            <div>
+                                {{ error }}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+
+                {% for campo in formulario %}
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-semibold">
+                            {{ campo.label }}
+                        </label>
+
+                        {{ campo }}
+
+
+                        {% if campo.help_text %}
+
+                            <div class="form-text mt-2">
+                                {{ campo.help_text }}
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if campo.errors %}
+
+                            <div class="mt-2">
+
+                                {% for error in campo.errors %}
+
+                                    <div class="text-danger small">
+                                        {{ error }}
+                                    </div>
+
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endfor %}
+
+
+                <div class="border-top pt-4 mt-4">
+
+                    <button
+                        type="submit"
+                        class="btn btn-inacap">
+
+                        Abrir mi cuenta
+
+                    </button>
+
+
+                    <a
+                        href="{% url 'inicio' %}"
+                        class="btn btn-secondary ms-2">
+
+                        Cancelar
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

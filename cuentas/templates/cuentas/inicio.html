@@ -1,0 +1,94 @@
+{% extends 'cuentas/base.html' %}
+
+{% block title %}
+Inicio | Banco Inacap
+{% endblock %}
+
+
+{% block contenido %}
+
+<div class="text-center mb-5">
+
+    <h1 class="fw-bold">
+        🏦 Sistema de Gestión Bancaria
+    </h1>
+
+    <p class="text-muted">
+        Administración de cuentas bancarias
+    </p>
+
+</div>
+
+
+<div class="row g-4">
+
+    <div class="col-md-6">
+
+        <div class="card p-4 text-center">
+
+            <h5 class="text-muted">
+                Cuentas registradas
+            </h5>
+
+            <h1 class="dashboard-number">
+                {{ total_cuentas }}
+            </h1>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-6">
+
+        <div class="card dashboard-card p-4 text-center">
+
+            <h5 class="text-muted">
+                Cuentas activas
+            </h5>
+
+            <h1 class="display-4 fw-bold text-success">
+                {{ cuentas_activas }}
+            </h1>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="card p-5 mt-4 text-center">
+
+    <h3>
+        Gestión de cuentas
+    </h3>
+
+    <p class="text-muted">
+        Cree, consulte, modifique y elimine cuentas bancarias.
+    </p>
+
+    <div>
+
+        <a
+            href="{% url 'listar_cuentas' %}"
+            class="btn btn-dark btn-lg me-2">
+
+            Ver cuentas
+
+        </a>
+
+
+        <a
+            href="{% url 'crear_cuenta' %}"
+            class="btn btn-success btn-lg">
+
+            + Crear cuenta
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

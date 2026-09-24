@@ -1,0 +1,74 @@
+{% extends 'cuentas/base.html' %}
+
+
+{% block title %}
+Eliminar Cuenta
+{% endblock %}
+
+
+{% block contenido %}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-7">
+
+        <div class="card p-5 text-center">
+
+            <h2 class="text-danger fw-bold">
+                ⚠ Eliminar cuenta
+            </h2>
+
+
+            <p class="mt-3">
+
+                ¿Está seguro de eliminar la cuenta
+
+                <strong>
+                    {{ cuenta.numero_cuenta }}
+                </strong>
+
+                perteneciente a
+
+                <strong>
+                    {{ cuenta.titular }}
+                </strong>?
+
+            </p>
+
+
+            <p class="text-muted">
+                Esta acción no se puede deshacer.
+            </p>
+
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+
+                <button
+                    type="submit"
+                    class="btn btn-danger">
+
+                    Sí, eliminar
+
+                </button>
+
+
+                <a
+                    href="{% url 'listar_cuentas' %}"
+                    class="btn btn-secondary">
+
+                    Cancelar
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
