@@ -1,50 +1,56 @@
 {% extends 'cuentas/base.html' %}
 
 {% block title %}
-Cuentas Bancarias
+Cuentas Bancarias | Banco Inacap
 {% endblock %}
 
 {% block contenido %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
 
     <div>
-        <h2 class="fw-bold">
+
+        <div class="d-inline-flex align-items-center gap-2 mb-1 px-3 py-1 bg-white border rounded-pill shadow-sm">
+            <i class="bi bi-shield-lock-fill text-primary" style="font-size: 0.85rem;"></i>
+            <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">ADMINISTRACIÓN DE CARTERA</small>
+        </div>
+
+        <h2 class="fw-bold text-dark mb-0">
             Cuentas Bancarias
         </h2>
 
-        <p class="text-muted mb-0">
-            Administración de cuentas registradas
+        <p class="text-muted mb-0 small">
+            Supervisión y administración centralizada de cuentas de clientes registradas
         </p>
+
     </div>
 
     <a
         href="{% url 'crear_cuenta' %}"
-        class="btn btn-inacap">
-
-        + Abrir nueva cuenta
-
+        class="btn btn-corporate d-inline-flex align-items-center gap-2">
+        <i class="bi bi-person-plus-fill"></i>
+        Abrir nueva cuenta
     </a>
 
 </div>
 
 
-<div class="card p-4">
+<div class="card p-0 shadow-sm border overflow-hidden">
 
     <div class="table-responsive">
 
-        <table class="table table-hover">
+        <table class="table table-hover align-middle mb-0">
 
             <thead>
 
                 <tr>
-                    <th>N° Cuenta</th>
+                    <th class="ps-4">N° Cuenta</th>
                     <th>Titular</th>
                     <th>RUT</th>
                     <th>Tipo</th>
-                    <th>Saldo</th>
+                    <th>Saldo Disponible</th>
                     <th>Estado</th>
-                    <th>Acciones</th>
+                    <th class="text-end pe-4">Acciones</th>
                 </tr>
 
             </thead>
@@ -56,45 +62,83 @@ Cuentas Bancarias
 
                     <tr>
 
-                        <td>
-                            {{ cuenta.numero_cuenta }}
+                        <!-- N° CUENTA -->
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-credit-card-2-front text-primary opacity-75"></i>
+                                <span class="fw-semibold font-monospace text-dark">
+                                    {{ cuenta.numero_cuenta }}
+                                </span>
+                            </div>
                         </td>
 
+                        <!-- TITULAR -->
                         <td>
-                            {{ cuenta.titular }}
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="avatar-circle">
+                                    {{ cuenta.titular|slice:":1"|upper }}
+                                </span>
+                                <div>
+                                    <div class="fw-bold text-dark">
+                                        {{ cuenta.titular }}
+                                    </div>
+                                    <small class="text-muted" style="font-size: 0.78rem;">
+                                        {{ cuenta.correo }}
+                                    </small>
+                                </div>
+                            </div>
                         </td>
 
+                        <!-- RUT -->
                         <td>
-                            {{ cuenta.rut }}
+                            <span class="text-dark font-monospace small fw-semibold">
+                                {{ cuenta.rut }}
+                            </span>
                         </td>
 
+                        <!-- TIPO DE CUENTA -->
                         <td>
-                            {{ cuenta.get_tipo_cuenta_display }}
+                            <span class="badge bg-light text-dark border">
+                                {% if cuenta.tipo_cuenta == 'CORRIENTE' %}
+                                    <i class="bi bi-briefcase-fill text-primary me-1"></i>
+                                {% else %}
+                                    <i class="bi bi-wallet2 text-info me-1"></i>
+                                {% endif %}
+                                {{ cuenta.get_tipo_cuenta_display }}
+                            </span>
                         </td>
 
+                        <!-- SALDO -->
                         <td>
-                            <strong>
+                            <div class="fw-bold fs-6 text-dark">
                                 ${{ cuenta.saldo_formateado }}
-                            </strong>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.72rem;">
+                                Renta: ${{ cuenta.sueldo_formateado }}
+                            </small>
                         </td>
 
+                        <!-- ESTADO -->
                         <td>
 
                             {% if cuenta.estado == 'ACTIVA' %}
 
                                 <span class="badge bg-success">
+                                    <span class="pulse-dot pulse-dot-green"></span>
                                     Activa
                                 </span>
 
                             {% elif cuenta.estado == 'BLOQUEADA' %}
 
-                                <span class="badge bg-warning text-dark">
+                                <span class="badge bg-warning">
+                                    <span class="pulse-dot pulse-dot-amber"></span>
                                     Bloqueada
                                 </span>
 
                             {% else %}
 
                                 <span class="badge bg-secondary">
+                                    <span class="pulse-dot pulse-dot-gray"></span>
                                     Cerrada
                                 </span>
 
@@ -103,44 +147,41 @@ Cuentas Bancarias
                         </td>
 
 
-                        <td>
+                        <!-- ACCIONES -->
+                        <td class="text-end pe-4">
 
-                            <!-- VER CUENTA Y PRODUCTOS -->
+                            <div class="d-inline-flex gap-1">
 
-                            <a
-                                href="{% url 'detalle_cuenta' cuenta.id %}"
-                                class="btn btn-inacap btn-sm">
+                                <!-- VER CUENTA Y PRODUCTOS -->
+                                <a
+                                    href="{% url 'detalle_cuenta' cuenta.id %}"
+                                    class="btn btn-corporate btn-sm d-inline-flex align-items-center gap-1 py-1 px-2"
+                                    title="Ver cuenta y productos">
+                                    <i class="bi bi-eye-fill"></i>
+                                    <span>Ver</span>
+                                </a>
 
-                                Ver cuenta
+                                <!-- EDITAR -->
+                                <a
+                                    href="{% url 'editar_cuenta' cuenta.id %}"
+                                    class="btn btn-outline-dark btn-sm d-inline-flex align-items-center py-1 px-2"
+                                    title="Editar cuenta">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
 
-                            </a>
+                                <!-- ELIMINAR -->
+                                <a
+                                    href="{% url 'eliminar_cuenta' cuenta.id %}"
+                                    class="btn btn-outline-danger btn-sm d-inline-flex align-items-center py-1 px-2"
+                                    title="Eliminar cuenta">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </a>
 
-
-                            <!-- EDITAR -->
-
-                            <a
-                                href="{% url 'editar_cuenta' cuenta.id %}"
-                                class="btn btn-dark-custom btn-sm">
-
-                                Editar
-
-                            </a>
-
-
-                            <!-- ELIMINAR -->
-
-                            <a
-                                href="{% url 'eliminar_cuenta' cuenta.id %}"
-                                class="btn btn-danger btn-sm">
-
-                                Eliminar
-
-                            </a>
+                            </div>
 
                         </td>
 
                     </tr>
-
 
                 {% empty %}
 
@@ -148,9 +189,18 @@ Cuentas Bancarias
 
                         <td
                             colspan="7"
-                            class="text-center text-muted py-5">
+                            class="text-center py-5">
 
-                            No existen cuentas registradas.
+                            <div class="py-4">
+                                <i class="bi bi-folder2-open display-4 text-muted mb-3 d-block opacity-50"></i>
+                                <h5 class="fw-bold text-dark">No existen cuentas registradas</h5>
+                                <p class="text-muted small mb-3">
+                                    Comience ingresando una nueva cuenta de cliente en el sistema.
+                                </p>
+                                <a href="{% url 'crear_cuenta' %}" class="btn btn-corporate btn-sm">
+                                    <i class="bi bi-plus-lg me-1"></i> Abrir primera cuenta
+                                </a>
+                            </div>
 
                         </td>
 

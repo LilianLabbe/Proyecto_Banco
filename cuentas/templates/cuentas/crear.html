@@ -1,56 +1,62 @@
 {% extends 'cuentas/base.html' %}
 
 {% block title %}
-Abre tu cuenta
+Apertura de Cuenta | Banco Inacap
 {% endblock %}
 
 {% block contenido %}
 
 <div class="row justify-content-center">
 
-    <div class="col-md-8">
+    <div class="col-lg-8">
 
-        <div class="card p-4 p-md-5">
+        <div class="card p-4 p-md-5 shadow-sm border">
 
             <div class="mb-4">
 
-                <h2 class="fw-bold mb-2">
-                    Abre tu cuenta
+                <div class="d-inline-flex align-items-center gap-2 mb-2 px-3 py-1 bg-white border rounded-pill shadow-sm">
+                    <i class="bi bi-shield-lock-fill text-primary"></i>
+                    <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">FORMULARIO DE ADMISIÓN BANCARIA</small>
+                </div>
+
+                <h2 class="fw-bold text-dark mb-1">
+                    Apertura de Cuenta Digital
                 </h2>
 
-                <p class="text-muted mb-0">
-                    Ingresa tus datos y revisaremos el producto
-                    disponible según tu perfil.
+                <p class="text-muted small mb-0">
+                    Ingresa tus antecedentes personales y financieros para la evaluación inmediata de tu cuenta y productos.
                 </p>
 
             </div>
 
 
-            <div class="alert alert-light border mb-4">
+            <div class="p-3 bg-light rounded-3 border mb-4">
 
-                <strong>Requisitos del proyecto:</strong>
+                <div class="fw-bold text-dark small mb-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-info-circle-fill text-primary"></i>
+                    <span>Criterios de Evaluación Paramétrica</span>
+                </div>
 
-                <ul class="mb-0 mt-2">
-                    <li>
-                        Cuenta Débito:
-                        <strong>sin renta mínima.</strong>
-                    </li>
-
-                    <li>
-                        Cuenta Corriente:
-                        <strong>renta mínima de $600.000.</strong>
-                    </li>
-
-                    <li>
-                        Línea de Crédito:
-                        <strong>disponible desde $900.000.</strong>
-                    </li>
-                </ul>
-
-                <small class="text-muted d-block mt-2">
-                    Estos montos corresponden a reglas académicas
-                    definidas para este proyecto.
-                </small>
+                <div class="row g-2 small text-muted">
+                    <div class="col-sm-4">
+                        <div class="p-2 bg-white rounded border">
+                            <span class="d-block fw-semibold text-dark">Cuenta Débito</span>
+                            <span>Sin renta mínima</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 bg-white rounded border">
+                            <span class="d-block fw-semibold text-dark">Cuenta Corriente</span>
+                            <span>Renta desde $600.000</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-2 bg-white rounded border">
+                            <span class="d-block fw-semibold text-dark">Línea de Crédito</span>
+                            <span>Renta desde $900.000</span>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -59,13 +65,13 @@ Abre tu cuenta
 
                 {% csrf_token %}
 
-
                 {% if formulario.non_field_errors %}
 
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger py-2 px-3 small mb-4">
 
                         {% for error in formulario.non_field_errors %}
                             <div>
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
                                 {{ error }}
                             </div>
                         {% endfor %}
@@ -85,24 +91,23 @@ Abre tu cuenta
 
                         {{ campo }}
 
-
                         {% if campo.help_text %}
 
-                            <div class="form-text mt-2">
+                            <div class="form-text mt-1 small text-muted">
                                 {{ campo.help_text }}
                             </div>
 
                         {% endif %}
 
-
                         {% if campo.errors %}
 
-                            <div class="mt-2">
+                            <div class="mt-1">
 
                                 {% for error in campo.errors %}
 
-                                    <div class="text-danger small">
-                                        {{ error }}
+                                    <div class="text-danger small d-flex align-items-center gap-1">
+                                        <i class="bi bi-exclamation-circle-fill"></i>
+                                        <span>{{ error }}</span>
                                     </div>
 
                                 {% endfor %}
@@ -116,23 +121,19 @@ Abre tu cuenta
                 {% endfor %}
 
 
-                <div class="border-top pt-4 mt-4">
+                <div class="border-top pt-4 mt-4 d-flex gap-2">
 
                     <button
                         type="submit"
-                        class="btn btn-inacap">
-
-                        Abrir mi cuenta
-
+                        class="btn btn-corporate d-inline-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Confirmar y Abrir Cuenta
                     </button>
-
 
                     <a
                         href="{% url 'inicio' %}"
-                        class="btn btn-secondary ms-2">
-
+                        class="btn btn-outline-dark d-inline-flex align-items-center gap-2">
                         Cancelar
-
                     </a>
 
                 </div>
