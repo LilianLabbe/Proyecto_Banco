@@ -1,8 +1,11 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, RegexValidator
 from django.core.exceptions import ValidationError
+
 from datetime import date
 from decimal import Decimal
+
 import secrets
 
 
@@ -21,7 +24,9 @@ def validar_rut_chileno(rut):
     """
 
     if not rut:
-        raise ValidationError("Ingrese un RUT válido.")
+        raise ValidationError(
+            "Ingrese un RUT válido."
+        )
 
     rut_limpio = (
         rut.replace(".", "")
@@ -31,7 +36,9 @@ def validar_rut_chileno(rut):
     )
 
     if len(rut_limpio) < 2:
-        raise ValidationError("Ingrese un RUT válido.")
+        raise ValidationError(
+            "Ingrese un RUT válido."
+        )
 
     cuerpo = rut_limpio[:-1]
     dv_ingresado = rut_limpio[-1]
@@ -114,6 +121,7 @@ class CuentaBancaria(models.Model):
     RENTA_MIN_LINEA_CREDITO = Decimal("900000")
     RENTA_MIN_TARJETA_CREDITO = Decimal("1200000")
 
+
     # =====================================================
     # TIPOS DE CUENTA
     # =====================================================
@@ -122,6 +130,7 @@ class CuentaBancaria(models.Model):
         ("DEBITO", "Cuenta Débito"),
         ("CORRIENTE", "Cuenta Corriente"),
     ]
+
 
     # =====================================================
     # ESTADOS DE LA CUENTA
@@ -132,6 +141,21 @@ class CuentaBancaria(models.Model):
         ("BLOQUEADA", "Bloqueada"),
         ("CERRADA", "Cerrada"),
     ]
+
+
+    # =====================================================
+    # USUARIO PROPIETARIO
+    # =====================================================
+
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="cuenta_bancaria",
+        verbose_name="Usuario"
+    )
+
 
     # =====================================================
     # DATOS DE LA CUENTA
@@ -144,6 +168,7 @@ class CuentaBancaria(models.Model):
         blank=True,
         verbose_name="Número de cuenta"
     )
+
 
     # =====================================================
     # DATOS DEL CLIENTE
@@ -193,6 +218,7 @@ class CuentaBancaria(models.Model):
         verbose_name="Renta mensual"
     )
 
+
     # =====================================================
     # PRODUCTO BANCARIO
     # =====================================================
@@ -225,6 +251,7 @@ class CuentaBancaria(models.Model):
         verbose_name="Estado"
     )
 
+
     # =====================================================
     # TARJETA DE CRÉDITO
     # =====================================================
@@ -233,6 +260,7 @@ class CuentaBancaria(models.Model):
         default=False,
         verbose_name="Tarjeta de crédito solicitada"
     )
+
 
     # =====================================================
     # VALIDACIONES DE NEGOCIO
@@ -252,8 +280,6 @@ class CuentaBancaria(models.Model):
                 self.rut
             )
 
-            # Lo normalizamos antes de validar
-            # duplicados.
             self.rut = normalizar_rut(
                 self.rut
             )
@@ -274,6 +300,7 @@ class CuentaBancaria(models.Model):
                     "se requiere una renta mensual "
                     "mínima de $600.000."
             })
+
 
     # =====================================================
     # GENERAR NÚMERO DE CUENTA
@@ -300,6 +327,7 @@ class CuentaBancaria(models.Model):
 
             if not existe:
                 return numero
+
 
     # =====================================================
     # GUARDAR
@@ -356,6 +384,7 @@ class CuentaBancaria(models.Model):
             **kwargs
         )
 
+
     # =====================================================
     # FORMATEO DE PESOS CHILENOS
     # =====================================================
@@ -371,6 +400,7 @@ class CuentaBancaria(models.Model):
             .replace(",", ".")
         )
 
+
     @property
     def saldo_formateado(self):
 
@@ -378,12 +408,14 @@ class CuentaBancaria(models.Model):
             self.saldo
         )
 
+
     @property
     def sueldo_formateado(self):
 
         return self.formatear_pesos(
             self.sueldo_mensual
         )
+
 
     # =====================================================
     # CUENTA DÉBITO
@@ -395,6 +427,7 @@ class CuentaBancaria(models.Model):
         return (
             self.estado == "ACTIVA"
         )
+
 
     # =====================================================
     # CUENTA CORRIENTE
@@ -408,6 +441,7 @@ class CuentaBancaria(models.Model):
             == "CORRIENTE"
         )
 
+
     @property
     def puede_cuenta_corriente(self):
 
@@ -416,6 +450,7 @@ class CuentaBancaria(models.Model):
             >= self.RENTA_MIN_CORRIENTE
             and self.estado == "ACTIVA"
         )
+
 
     @property
     def estado_cuenta_corriente(self):
@@ -455,6 +490,7 @@ class CuentaBancaria(models.Model):
             f"Faltan ${diferencia_formateada}."
         )
 
+
     # =====================================================
     # LÍNEA DE CRÉDITO
     # =====================================================
@@ -473,6 +509,7 @@ class CuentaBancaria(models.Model):
             and self.estado == "ACTIVA"
         )
 
+
     @property
     def puede_linea_credito(self):
         """
@@ -481,6 +518,7 @@ class CuentaBancaria(models.Model):
         """
 
         return self.tiene_linea_credito
+
 
     @property
     def estado_linea_credito(self):
@@ -524,6 +562,7 @@ class CuentaBancaria(models.Model):
             f"Faltan ${diferencia_formateada}."
         )
 
+
     # =====================================================
     # TARJETA DE CRÉDITO
     # =====================================================
@@ -536,6 +575,7 @@ class CuentaBancaria(models.Model):
             >= self.RENTA_MIN_TARJETA_CREDITO
             and self.estado == "ACTIVA"
         )
+
 
     @property
     def estado_tarjeta_credito(self):
@@ -577,6 +617,7 @@ class CuentaBancaria(models.Model):
             f"Faltan ${diferencia_formateada}."
         )
 
+
     # =====================================================
     # REPRESENTACIÓN
     # =====================================================
@@ -587,6 +628,7 @@ class CuentaBancaria(models.Model):
             f"{self.numero_cuenta} "
             f"- {self.titular}"
         )
+
 
     class Meta:
 

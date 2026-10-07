@@ -45,4 +45,10 @@ urlpatterns = [
         views.solicitar_tarjeta_credito,
         name='solicitar_tarjeta_credito'
     ),
+    
+    path(
+    'cuenta/<int:cuenta_id>/solicitar-cuenta-corriente/',
+    views.solicitar_cuenta_corriente,
+    name='solicitar_cuenta_corriente'
+),
 ]

@@ -31,6 +31,7 @@ Abre tu cuenta
                 <strong>Requisitos del proyecto:</strong>
 
                 <ul class="mb-0 mt-2">
+
                     <li>
                         Cuenta Débito:
                         <strong>sin renta mínima.</strong>
@@ -45,6 +46,7 @@ Abre tu cuenta
                         Línea de Crédito:
                         <strong>disponible desde $900.000.</strong>
                     </li>
+
                 </ul>
 
                 <small class="text-muted d-block mt-2">
@@ -55,24 +57,20 @@ Abre tu cuenta
             </div>
 
 
-            <form method="POST">
+            <div
+                id="mensajeError"
+                class="alert alert-danger d-none">
+            </div>
+
+            <div
+                id="mensajeExito"
+                class="alert alert-success d-none">
+            </div>
+
+
+            <form id="formCrearCuenta">
 
                 {% csrf_token %}
-
-
-                {% if formulario.non_field_errors %}
-
-                    <div class="alert alert-danger">
-
-                        {% for error in formulario.non_field_errors %}
-                            <div>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-
-                    </div>
-
-                {% endif %}
 
 
                 {% for campo in formulario %}
@@ -95,21 +93,10 @@ Abre tu cuenta
                         {% endif %}
 
 
-                        {% if campo.errors %}
-
-                            <div class="mt-2">
-
-                                {% for error in campo.errors %}
-
-                                    <div class="text-danger small">
-                                        {{ error }}
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% endif %}
+                        <div
+                            id="error_{{ campo.name }}"
+                            class="text-danger small mt-2">
+                        </div>
 
                     </div>
 
@@ -120,6 +107,7 @@ Abre tu cuenta
 
                     <button
                         type="submit"
+                        id="btnCrear"
                         class="btn btn-inacap">
 
                         Abrir mi cuenta
@@ -144,5 +132,163 @@ Abre tu cuenta
     </div>
 
 </div>
+
+
+<script>
+
+document
+    .getElementById('formCrearCuenta')
+    .addEventListener('submit', async function(event) {
+
+        event.preventDefault();
+
+
+        const boton = document.getElementById('btnCrear');
+
+        const mensajeError =
+            document.getElementById('mensajeError');
+
+        const mensajeExito =
+            document.getElementById('mensajeExito');
+
+
+        mensajeError.classList.add('d-none');
+        mensajeExito.classList.add('d-none');
+
+
+        document
+            .querySelectorAll('[id^="error_"]')
+            .forEach(elemento => {
+                elemento.textContent = '';
+            });
+
+
+        const formulario = event.target;
+
+        const formData = new FormData(formulario);
+
+
+        const datos = {
+
+            titular:
+                formData.get('titular'),
+
+            rut:
+                formData.get('rut'),
+
+            telefono:
+                formData.get('telefono'),
+
+            correo:
+                formData.get('correo'),
+
+            sueldo_mensual:
+                formData.get('sueldo_mensual'),
+
+            tipo_cuenta:
+                formData.get('tipo_cuenta')
+
+        };
+
+
+        boton.disabled = true;
+        boton.textContent = 'Creando cuenta...';
+
+
+        try {
+
+            const respuesta = await fetch(
+                '/api/cuentas/',
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization':
+                            'Token {{ request.session.api_token }}'
+                    },
+
+                    body: JSON.stringify(datos)
+                }
+            );
+
+
+            const resultado = await respuesta.json();
+
+
+            if (!respuesta.ok) {
+
+                for (const campo in resultado) {
+
+                    const contenedor =
+                        document.getElementById(
+                            'error_' + campo
+                        );
+
+                    if (contenedor) {
+
+                        const errores = resultado[campo];
+
+                        contenedor.textContent =
+                            Array.isArray(errores)
+                            ? errores.join(' ')
+                            : errores;
+
+                    }
+
+                }
+
+
+                mensajeError.textContent =
+                    'No se pudo crear la cuenta. '
+                    + 'Revisa los datos ingresados.';
+
+                mensajeError.classList.remove('d-none');
+
+                return;
+            }
+
+
+            mensajeExito.textContent =
+                'Cuenta creada correctamente. '
+                + 'Número de cuenta: '
+                + resultado.numero_cuenta;
+
+            mensajeExito.classList.remove('d-none');
+
+
+            setTimeout(function() {
+
+                window.location.href =
+                    '/cuenta/'
+                    + resultado.id
+                    + '/';
+
+            }, 1200);
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            mensajeError.textContent =
+                'No se pudo conectar con la API.';
+
+            mensajeError.classList.remove('d-none');
+
+        }
+        finally {
+
+            boton.disabled = false;
+
+            boton.textContent =
+                'Abrir mi cuenta';
+
+        }
+
+    });
+
+</script>
 
 {% endblock %}
