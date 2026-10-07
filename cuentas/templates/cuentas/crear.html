@@ -1,84 +1,76 @@
 {% extends 'cuentas/base.html' %}
 
 {% block title %}
-Apertura de Cuenta | Banco Inacap
+Abre tu cuenta
 {% endblock %}
 
 {% block contenido %}
 
 <div class="row justify-content-center">
 
-    <div class="col-lg-8">
+    <div class="col-md-8">
 
-        <div class="card p-4 p-md-5 shadow-sm border">
+        <div class="card p-4 p-md-5">
 
             <div class="mb-4">
 
-                <div class="d-inline-flex align-items-center gap-2 mb-2 px-3 py-1 bg-white border rounded-pill shadow-sm">
-                    <i class="bi bi-shield-lock-fill text-primary"></i>
-                    <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">FORMULARIO DE ADMISIÓN BANCARIA</small>
-                </div>
-
-                <h2 class="fw-bold text-dark mb-1">
-                    Apertura de Cuenta Digital
+                <h2 class="fw-bold mb-2">
+                    Abre tu cuenta
                 </h2>
 
-                <p class="text-muted small mb-0">
-                    Ingresa tus antecedentes personales y financieros para la evaluación inmediata de tu cuenta y productos.
+                <p class="text-muted mb-0">
+                    Ingresa tus datos y revisaremos el producto
+                    disponible según tu perfil.
                 </p>
 
             </div>
 
 
-            <div class="p-3 bg-light rounded-3 border mb-4">
+            <div class="alert alert-light border mb-4">
 
-                <div class="fw-bold text-dark small mb-2 d-flex align-items-center gap-2">
-                    <i class="bi bi-info-circle-fill text-primary"></i>
-                    <span>Criterios de Evaluación Paramétrica</span>
-                </div>
+                <strong>Requisitos del proyecto:</strong>
 
-                <div class="row g-2 small text-muted">
-                    <div class="col-sm-4">
-                        <div class="p-2 bg-white rounded border">
-                            <span class="d-block fw-semibold text-dark">Cuenta Débito</span>
-                            <span>Sin renta mínima</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="p-2 bg-white rounded border">
-                            <span class="d-block fw-semibold text-dark">Cuenta Corriente</span>
-                            <span>Renta desde $600.000</span>
-                        </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="p-2 bg-white rounded border">
-                            <span class="d-block fw-semibold text-dark">Línea de Crédito</span>
-                            <span>Renta desde $900.000</span>
-                        </div>
-                    </div>
-                </div>
+                <ul class="mb-0 mt-2">
+
+                    <li>
+                        Cuenta Débito:
+                        <strong>sin renta mínima.</strong>
+                    </li>
+
+                    <li>
+                        Cuenta Corriente:
+                        <strong>renta mínima de $600.000.</strong>
+                    </li>
+
+                    <li>
+                        Línea de Crédito:
+                        <strong>disponible desde $900.000.</strong>
+                    </li>
+
+                </ul>
+
+                <small class="text-muted d-block mt-2">
+                    Estos montos corresponden a reglas académicas
+                    definidas para este proyecto.
+                </small>
 
             </div>
 
 
-            <form method="POST">
+            <div
+                id="mensajeError"
+                class="alert alert-danger d-none">
+            </div>
+
+            <div
+                id="mensajeExito"
+                class="alert alert-success d-none">
+            </div>
+
+
+            <form id="formCrearCuenta">
 
                 {% csrf_token %}
-
-                {% if formulario.non_field_errors %}
-
-                    <div class="alert alert-danger py-2 px-3 small mb-4">
-
-                        {% for error in formulario.non_field_errors %}
-                            <div>
-                                <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                                {{ error }}
-                            </div>
-                        {% endfor %}
-
-                    </div>
-
-                {% endif %}
 
 
                 {% for campo in formulario %}
@@ -91,49 +83,44 @@ Apertura de Cuenta | Banco Inacap
 
                         {{ campo }}
 
+
                         {% if campo.help_text %}
 
-                            <div class="form-text mt-1 small text-muted">
+                            <div class="form-text mt-2">
                                 {{ campo.help_text }}
                             </div>
 
                         {% endif %}
 
-                        {% if campo.errors %}
 
-                            <div class="mt-1">
-
-                                {% for error in campo.errors %}
-
-                                    <div class="text-danger small d-flex align-items-center gap-1">
-                                        <i class="bi bi-exclamation-circle-fill"></i>
-                                        <span>{{ error }}</span>
-                                    </div>
-
-                                {% endfor %}
-
-                            </div>
-
-                        {% endif %}
+                        <div
+                            id="error_{{ campo.name }}"
+                            class="text-danger small mt-2">
+                        </div>
 
                     </div>
 
                 {% endfor %}
 
 
-                <div class="border-top pt-4 mt-4 d-flex gap-2">
+                <div class="border-top pt-4 mt-4">
 
                     <button
                         type="submit"
-                        class="btn btn-corporate d-inline-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill"></i>
-                        Confirmar y Abrir Cuenta
+                        id="btnCrear"
+                        class="btn btn-inacap">
+
+                        Abrir mi cuenta
+
                     </button>
+
 
                     <a
                         href="{% url 'inicio' %}"
-                        class="btn btn-outline-dark d-inline-flex align-items-center gap-2">
+                        class="btn btn-secondary ms-2">
+
                         Cancelar
+
                     </a>
 
                 </div>
@@ -145,5 +132,163 @@ Apertura de Cuenta | Banco Inacap
     </div>
 
 </div>
+
+
+<script>
+
+document
+    .getElementById('formCrearCuenta')
+    .addEventListener('submit', async function(event) {
+
+        event.preventDefault();
+
+
+        const boton = document.getElementById('btnCrear');
+
+        const mensajeError =
+            document.getElementById('mensajeError');
+
+        const mensajeExito =
+            document.getElementById('mensajeExito');
+
+
+        mensajeError.classList.add('d-none');
+        mensajeExito.classList.add('d-none');
+
+
+        document
+            .querySelectorAll('[id^="error_"]')
+            .forEach(elemento => {
+                elemento.textContent = '';
+            });
+
+
+        const formulario = event.target;
+
+        const formData = new FormData(formulario);
+
+
+        const datos = {
+
+            titular:
+                formData.get('titular'),
+
+            rut:
+                formData.get('rut'),
+
+            telefono:
+                formData.get('telefono'),
+
+            correo:
+                formData.get('correo'),
+
+            sueldo_mensual:
+                formData.get('sueldo_mensual'),
+
+            tipo_cuenta:
+                formData.get('tipo_cuenta')
+
+        };
+
+
+        boton.disabled = true;
+        boton.textContent = 'Creando cuenta...';
+
+
+        try {
+
+            const respuesta = await fetch(
+                '/api/cuentas/',
+                {
+                    method: 'POST',
+
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization':
+                            'Token {{ request.session.api_token }}'
+                    },
+
+                    body: JSON.stringify(datos)
+                }
+            );
+
+
+            const resultado = await respuesta.json();
+
+
+            if (!respuesta.ok) {
+
+                for (const campo in resultado) {
+
+                    const contenedor =
+                        document.getElementById(
+                            'error_' + campo
+                        );
+
+                    if (contenedor) {
+
+                        const errores = resultado[campo];
+
+                        contenedor.textContent =
+                            Array.isArray(errores)
+                            ? errores.join(' ')
+                            : errores;
+
+                    }
+
+                }
+
+
+                mensajeError.textContent =
+                    'No se pudo crear la cuenta. '
+                    + 'Revisa los datos ingresados.';
+
+                mensajeError.classList.remove('d-none');
+
+                return;
+            }
+
+
+            mensajeExito.textContent =
+                'Cuenta creada correctamente. '
+                + 'Número de cuenta: '
+                + resultado.numero_cuenta;
+
+            mensajeExito.classList.remove('d-none');
+
+
+            setTimeout(function() {
+
+                window.location.href =
+                    '/cuenta/'
+                    + resultado.id
+                    + '/';
+
+            }, 1200);
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+            mensajeError.textContent =
+                'No se pudo conectar con la API.';
+
+            mensajeError.classList.remove('d-none');
+
+        }
+        finally {
+
+            boton.disabled = false;
+
+            boton.textContent =
+                'Abrir mi cuenta';
+
+        }
+
+    });
+
+</script>
 
 {% endblock %}

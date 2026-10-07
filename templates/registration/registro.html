@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Registro | Sistema Bancario
+    </title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f4f5f7;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .registro-card {
+            width: 100%;
+            max-width: 520px;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            border-top: 5px solid #e60000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .subtitulo {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .campo {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #e60000;
+            box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.08);
+        }
+
+        .ayuda {
+            color: #666;
+            font-size: 13px;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .password-info {
+            background: #f8f8f8;
+            border-left: 4px solid #e60000;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: #b00000;
+            font-size: 13px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 8px;
+            background: #e60000;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #b80000;
+        }
+
+        .login {
+            text-align: center;
+            margin-top: 22px;
+        }
+
+        .login a {
+            color: #e60000;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .login a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 15px;
+            }
+
+            .registro-card {
+                padding: 25px 20px;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="registro-card">
+
+    <h1>
+        🏦 Crear cuenta bancaria
+    </h1>
+
+    <div class="subtitulo">
+        Sistema Bancario | INACAP
+    </div>
+
+
+    <form method="post">
+
+        {% csrf_token %}
+
+
+        <!-- ERRORES GENERALES -->
+
+        {% if formulario.non_field_errors %}
+
+            {% for error in formulario.non_field_errors %}
+
+                <div class="error">
+                    {{ error }}
+                </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+
+        <!-- CAMPOS DEL FORMULARIO -->
+
+        {% for campo in formulario %}
+
+            <div class="campo">
+
+                <label for="{{ campo.id_for_label }}">
+                    {{ campo.label }}
+                </label>
+
+
+                {{ campo }}
+
+
+                <!-- INFORMACIÓN ESPECIAL PARA CONTRASEÑA -->
+
+                {% if campo.name == 'password1' %}
+
+                    <div class="password-info">
+
+                        <strong>
+                            Requisitos de contraseña:
+                        </strong>
+
+                        <br>
+
+                        • Mínimo 6 caracteres
+
+                        <br>
+
+                        • Máximo 10 caracteres
+
+                        <br>
+
+                        • Debe contener al menos una letra
+
+                        <br>
+
+                        • Debe contener al menos un número
+
+                        <br>
+
+                        • Debe contener al menos un símbolo
+
+                        <br>
+
+                        Ejemplo:
+
+                        <strong>
+                            Banco1!
+                        </strong>
+
+                    </div>
+
+                {% elif campo.help_text %}
+
+                    <div class="ayuda">
+
+                        {{ campo.help_text }}
+
+                    </div>
+
+                {% endif %}
+
+
+                <!-- ERRORES DEL CAMPO -->
+
+                {% if campo.errors %}
+
+                    {% for error in campo.errors %}
+
+                        <div class="error">
+                            {{ error }}
+                        </div>
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
+        {% endfor %}
+
+
+        <button type="submit">
+
+            Registrarme y abrir mi cuenta
+
+        </button>
+
+    </form>
+
+
+    <div class="login">
+
+        ¿Ya tienes una cuenta?
+
+        <a href="{% url 'login' %}">
+            Iniciar sesión
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

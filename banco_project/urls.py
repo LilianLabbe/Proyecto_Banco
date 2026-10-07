@@ -17,12 +17,37 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from cuentas import views
+
 
 urlpatterns = [
 
     path(
         'admin/',
         admin.site.urls
+    ),
+
+    path(
+        'login/',
+        views.login_personalizado,
+        name='login'
+    ),
+
+    path(
+        'registro/',
+        views.registrar_cliente,
+        name='registro'
+    ),
+
+    path(
+        'logout/',
+        views.cerrar_sesion,
+        name='logout'
+    ),
+
+    path(
+        'api/',
+        include('cuentas.api_urls')
     ),
 
     path(

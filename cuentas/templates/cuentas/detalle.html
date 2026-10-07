@@ -1,200 +1,150 @@
 {% extends 'cuentas/base.html' %}
 
 {% block title %}
-Detalle de Cuenta | Banco Inacap
+Mi Cuenta
 {% endblock %}
 
 
 {% block contenido %}
 
 <!-- =====================================================
-     CABECERA DE BIENVENIDA
-===================================================== -->
-
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-
-    <div>
-
-        <div class="d-inline-flex align-items-center gap-2 mb-1 px-3 py-1 bg-white border rounded-pill shadow-sm">
-            <i class="bi bi-shield-check text-success"></i>
-            <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">PORTAL DE CLIENTE AUTENTICADO</small>
-        </div>
-
-        <h1 class="fw-bold text-dark mb-0">
-            Hola, {{ cuenta.titular }}
-        </h1>
-
-        <p class="text-muted mb-0 small">
-            Consulta el balance consolidado, estado de cuenta y catálogo de productos aprobados para tu perfil.
-        </p>
-
-    </div>
-
-    <div class="d-flex gap-2">
-
-        <a
-            href="{% url 'editar_cuenta' cuenta.id %}"
-            class="btn btn-outline-dark btn-sm d-inline-flex align-items-center gap-2">
-            <i class="bi bi-pencil-square"></i>
-            Editar Datos
-        </a>
-
-        <a
-            href="{% url 'listar_cuentas' %}"
-            class="btn btn-corporate btn-sm d-inline-flex align-items-center gap-2">
-            <i class="bi bi-arrow-left"></i>
-            Volver a Cuentas
-        </a>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     TARJETA BANCARIA VIRTUAL & RESUMEN FINANCIERO
-===================================================== -->
-
-<div class="card p-4 p-md-5 mb-5 shadow-sm border">
-
-    <div class="row g-4 align-items-center">
-
-        <!-- Mockup de Tarjeta Bancaria Física/Digital -->
-        <div class="col-lg-5">
-
-            <div class="virtual-bank-card p-4 mx-auto mx-lg-0">
-
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong class="text-white letter-spacing-1 fs-5">BANCO INACAP</strong>
-                        <div class="text-white-50 small" style="font-size: 0.70rem; letter-spacing: 1px;">
-                            {{ cuenta.get_tipo_cuenta_display|upper }}
-                        </div>
-                    </div>
-                    <div class="text-white opacity-75 fs-4">
-                        <i class="bi bi-wifi"></i>
-                    </div>
-                </div>
-
-                <div class="my-4">
-                    <span class="card-chip"></span>
-                </div>
-
-                <div>
-                    <div class="card-number-display mb-3">
-                        •••• •••• •••• {{ cuenta.numero_cuenta }}
-                    </div>
-
-                    <div class="d-flex justify-content-between align-items-end text-white">
-                        <div>
-                            <div class="text-white-50" style="font-size: 0.65rem; text-transform: uppercase;">Titular de la Cuenta</div>
-                            <div class="fw-bold small text-truncate" style="max-width: 190px;">{{ cuenta.titular|upper }}</div>
-                        </div>
-
-                        <div class="text-end">
-                            {% if cuenta.estado == "ACTIVA" %}
-                                <span class="badge bg-success py-1 px-2" style="font-size: 0.70rem;">
-                                    <span class="pulse-dot pulse-dot-green"></span> Activa
-                                </span>
-                            {% elif cuenta.estado == "BLOQUEADA" %}
-                                <span class="badge bg-warning py-1 px-2 text-dark" style="font-size: 0.70rem;">
-                                    <span class="pulse-dot pulse-dot-amber"></span> Bloqueada
-                                </span>
-                            {% else %}
-                                <span class="badge bg-secondary py-1 px-2" style="font-size: 0.70rem;">
-                                    Cerrada
-                                </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Ficha de Datos Financieros del Cliente -->
-        <div class="col-lg-7">
-
-            <div class="ps-lg-3">
-
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
-                    <div>
-                        <span class="text-muted small text-uppercase fw-semibold" style="letter-spacing: 0.5px;">Saldo Disponible en Cuenta</span>
-                        <h1 class="fw-bold display-5 text-dark mb-0 mt-1">
-                            ${{ cuenta.saldo_formateado }}
-                        </h1>
-                    </div>
-                    <span class="badge bg-light text-dark border px-3 py-2">
-                        <i class="bi bi-bank2 text-primary me-1"></i> Cuenta N° {{ cuenta.numero_cuenta }}
-                    </span>
-                </div>
-
-                <div class="row g-3 pt-3 border-top">
-
-                    <div class="col-sm-6">
-                        <div class="p-2 rounded bg-light border">
-                            <span class="text-muted small d-block">RUT del Titular</span>
-                            <strong class="text-dark font-monospace">{{ cuenta.rut }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="p-2 rounded bg-light border">
-                            <span class="text-muted small d-block">Teléfono de Contacto</span>
-                            <strong class="text-dark">{{ cuenta.telefono }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="p-2 rounded bg-light border">
-                            <span class="text-muted small d-block">Correo Electrónico</span>
-                            <strong class="text-dark small text-truncate d-block">{{ cuenta.correo }}</strong>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="p-2 rounded bg-light border">
-                            <span class="text-muted small d-block">Renta Mensual Registrada</span>
-                            <strong class="text-primary font-monospace">${{ cuenta.sueldo_formateado }}</strong>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     CATÁLOGO DE PRODUCTOS FINANCIEROS
+     BIENVENIDA
 ===================================================== -->
 
 <div class="mb-4">
 
-    <div class="d-inline-flex align-items-center gap-2 mb-1 px-3 py-1 bg-white border rounded-pill shadow-sm">
-        <i class="bi bi-stars text-warning"></i>
-        <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">OFERTA DE VALOR PERSONALIZADA</small>
-    </div>
+    <h1 class="fw-bold">
+        Hola, {{ cuenta.titular }}
+    </h1>
 
-    <h2 class="fw-bold text-dark mb-1">
-        Productos para ti
-    </h2>
-
-    <p class="text-muted small mb-0">
-        Evaluación paramétrica de productos financieros calculada según tu tipo de cuenta y renta mensual declarada.
+    <p class="text-muted">
+        Revisa tu cuenta, saldo y productos bancarios disponibles.
     </p>
 
 </div>
 
 
-<div class="row g-4 mb-5">
+<!-- =====================================================
+     RESUMEN DE LA CUENTA
+===================================================== -->
+
+<div class="card dashboard-card p-4 mb-5">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-8">
+
+            <span class="text-muted">
+                Producto actual
+            </span>
+
+            <h4 class="fw-bold mt-1">
+                {{ cuenta.get_tipo_cuenta_display }}
+            </h4>
+
+            <h3 class="fw-bold mt-3">
+                Cuenta N° {{ cuenta.numero_cuenta }}
+            </h3>
+
+            <div class="row mt-3">
+
+                <div class="col-md-6">
+
+                    <p class="mb-1">
+                        RUT:
+                        <strong>
+                            {{ cuenta.rut }}
+                        </strong>
+                    </p>
+
+                    <p class="mb-1">
+                        Teléfono:
+                        <strong>
+                            {{ cuenta.telefono }}
+                        </strong>
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <p class="mb-1">
+                        Correo:
+                        <strong>
+                            {{ cuenta.correo }}
+                        </strong>
+                    </p>
+
+                    <p class="mb-0">
+
+                        Estado:
+
+                        {% if cuenta.estado == "ACTIVA" %}
+
+                            <span class="badge bg-success">
+                                Activa
+                            </span>
+
+                        {% elif cuenta.estado == "BLOQUEADA" %}
+
+                            <span class="badge bg-warning text-dark">
+                                Bloqueada
+                            </span>
+
+                        {% else %}
+
+                            <span class="badge bg-secondary">
+                                Cerrada
+                            </span>
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+
+            <span class="text-muted">
+                Saldo disponible
+            </span>
+
+            <h2 class="fw-bold mt-1">
+                ${{ cuenta.saldo_formateado }}
+            </h2>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     PRODUCTOS
+===================================================== -->
+
+<div class="mb-4">
+
+    <h2 class="fw-bold">
+        Productos para ti
+    </h2>
+
+    <p class="text-muted">
+        Revisamos los productos disponibles según tu tipo de cuenta
+        y renta mensual registrada.
+    </p>
+
+</div>
+
+
+<div class="row g-4">
 
 
     <!-- =================================================
@@ -203,45 +153,34 @@ Detalle de Cuenta | Banco Inacap
 
     <div class="col-md-6 col-lg-3">
 
-        <div class="card p-4 h-100 d-flex flex-column justify-content-between border">
+        <div class="card p-4 h-100">
 
-            <div>
+            <h4 class="fw-bold">
+                Cuenta Débito
+            </h4>
 
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="icon-bubble icon-bubble-blue shadow-sm">
-                        <i class="bi bi-wallet2"></i>
-                    </div>
-                    <span class="badge bg-light text-dark border">Universal</span>
-                </div>
+            <p class="text-muted">
+                Permite recibir depósitos, realizar transferencias
+                y efectuar compras.
+            </p>
 
-                <h5 class="fw-bold text-dark mb-1">
-                    Cuenta Débito
-                </h5>
-
-                <p class="text-muted small">
-                    Depósitos, transferencias interbancarias y compras nacionales sin comisión.
-                </p>
-
-                <div class="p-2 bg-light rounded-3 border mb-3 small">
-                    <span class="text-muted d-block">Renta requerida:</span>
-                    <strong class="text-dark">Sin renta mínima</strong>
-                </div>
-
-            </div>
+            <p>
+                <strong>
+                    Sin renta mínima
+                </strong>
+            </p>
 
 
             {% if cuenta.tipo_cuenta == "DEBITO" %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small d-flex align-items-center gap-2">
-                    <i class="bi bi-check-circle-fill fs-5"></i>
-                    <span>Tu producto actual</span>
+                <div class="alert alert-success mt-auto mb-0">
+                    Este es tu producto actual.
                 </div>
 
             {% else %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small d-flex align-items-center gap-2">
-                    <i class="bi bi-check-circle fs-5"></i>
-                    <span>Producto disponible</span>
+                <div class="alert alert-success mt-auto mb-0">
+                    Producto disponible.
                 </div>
 
             {% endif %}
@@ -257,56 +196,86 @@ Detalle de Cuenta | Banco Inacap
 
     <div class="col-md-6 col-lg-3">
 
-        <div class="card p-4 h-100 d-flex flex-column justify-content-between border">
+        <div class="card p-4 h-100">
 
-            <div>
+            <h4 class="fw-bold">
+                Cuenta Corriente
+            </h4>
 
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="icon-bubble icon-bubble-navy shadow-sm">
-                        <i class="bi bi-briefcase-fill text-primary"></i>
-                    </div>
-                    <span class="badge bg-light text-dark border">$600.000</span>
-                </div>
+            <p class="text-muted">
+                Cuenta bancaria con acceso a productos
+                y beneficios adicionales.
+            </p>
 
-                <h5 class="fw-bold text-dark mb-1">
-                    Cuenta Corriente
-                </h5>
-
-                <p class="text-muted small">
-                    Acceso a talonario de cheques, línea de crédito y transferencias de alto monto.
-                </p>
-
-                <div class="p-2 bg-light rounded-3 border mb-3 small">
-                    <span class="text-muted d-block">Renta mínima:</span>
-                    <strong class="text-dark">$600.000 mensuales</strong>
-                </div>
-
-            </div>
+            <p>
+                Renta mínima:
+                <strong>
+                    $600.000
+                </strong>
+            </p>
 
 
             {% if cuenta.tiene_cuenta_corriente %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small d-flex align-items-center gap-2">
-                    <i class="bi bi-check-circle-fill fs-5"></i>
-                    <span>Ya tienes este producto</span>
+                <div class="alert alert-success mt-auto mb-0">
+
+                    <strong>
+                        Este es tu producto actual.
+                    </strong>
+
+                    <br><br>
+
+                    Ya cuentas con una Cuenta Corriente.
+
                 </div>
+
 
             {% elif cuenta.puede_cuenta_corriente %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small d-flex align-items-center gap-2">
-                    <i class="bi bi-patch-check-fill fs-5 text-success"></i>
-                    <span>¡Cumples los requisitos!</span>
+                <div class="alert alert-success">
+
+                    <strong>
+                        ¡Producto disponible!
+                    </strong>
+
+                    <br><br>
+
+                    Cumples los requisitos para optar
+                    a una Cuenta Corriente.
+
                 </div>
+
+
+                <form
+                    method="POST"
+                    action="{% url 'solicitar_cuenta_corriente' cuenta.id %}"
+                    class="mt-auto">
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-inacap w-100">
+
+                        Solicitar Cuenta Corriente
+
+                    </button>
+
+                </form>
+
 
             {% else %}
 
-                <div class="alert alert-secondary mt-auto mb-0 py-2 px-3 small">
-                    <div class="fw-bold mb-1">
-                        <i class="bi bi-lock-fill me-1"></i> No disponible
-                    </div>
-                    <span class="text-muted" style="font-size: 0.78rem;">
-                        {{ cuenta.estado_cuenta_corriente }}
-                    </span>
+                <div class="alert alert-secondary mt-auto mb-0">
+
+                    <strong>
+                        No disponible actualmente.
+                    </strong>
+
+                    <br><br>
+
+                    {{ cuenta.estado_cuenta_corriente }}
+
                 </div>
 
             {% endif %}
@@ -322,60 +291,64 @@ Detalle de Cuenta | Banco Inacap
 
     <div class="col-md-6 col-lg-3">
 
-        <div class="card p-4 h-100 d-flex flex-column justify-content-between border">
+        <div class="card p-4 h-100">
 
-            <div>
+            <h4 class="fw-bold">
+                Línea de Crédito
+            </h4>
 
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="icon-bubble icon-bubble-green shadow-sm">
-                        <i class="bi bi-shield-plus"></i>
-                    </div>
-                    <span class="badge bg-light text-dark border">$900.000</span>
-                </div>
+            <p class="text-muted">
+                Beneficio asociado exclusivamente a una
+                Cuenta Corriente para cubrir necesidades
+                de corto plazo.
+            </p>
 
-                <h5 class="fw-bold text-dark mb-1">
-                    Línea de Crédito
-                </h5>
-
-                <p class="text-muted small">
-                    Sobregiro pactado automático asociado a tu cuenta corriente para emergencias.
-                </p>
-
-                <div class="p-2 bg-light rounded-3 border mb-3 small">
-                    <span class="text-muted d-block">Renta mínima:</span>
-                    <strong class="text-dark">$900.000 + Cta. Corriente</strong>
-                </div>
-
-            </div>
+            <p>
+                Renta mínima:
+                <strong>
+                    $900.000
+                </strong>
+            </p>
 
 
             {% if cuenta.tiene_linea_credito %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small d-flex align-items-center gap-2">
-                    <i class="bi bi-check-circle-fill fs-5"></i>
-                    <span>Línea activa en tu cuenta</span>
+                <div class="alert alert-success mt-auto mb-0">
+
+                    Línea de Crédito incluida
+                    en tu Cuenta Corriente.
+
                 </div>
+
 
             {% elif cuenta.tipo_cuenta != "CORRIENTE" %}
 
-                <div class="alert alert-secondary mt-auto mb-0 py-2 px-3 small">
-                    <div class="fw-bold mb-1">
-                        <i class="bi bi-lock-fill me-1"></i> Requiere Cta. Corriente
-                    </div>
-                    <span class="text-muted" style="font-size: 0.78rem;">
-                        Primero debes poseer una Cuenta Corriente activa.
-                    </span>
+                <div class="alert alert-secondary mt-auto mb-0">
+
+                    <strong>
+                        No disponible.
+                    </strong>
+
+                    <br><br>
+
+                    Para acceder a una Línea de Crédito
+                    primero debes tener una Cuenta Corriente.
+
                 </div>
+
 
             {% else %}
 
-                <div class="alert alert-secondary mt-auto mb-0 py-2 px-3 small">
-                    <div class="fw-bold mb-1">
-                        <i class="bi bi-lock-fill me-1"></i> No disponible
-                    </div>
-                    <span class="text-muted" style="font-size: 0.78rem;">
-                        {{ cuenta.estado_linea_credito }}
-                    </span>
+                <div class="alert alert-secondary mt-auto mb-0">
+
+                    <strong>
+                        No disponible actualmente.
+                    </strong>
+
+                    <br><br>
+
+                    {{ cuenta.estado_linea_credito }}
+
                 </div>
 
             {% endif %}
@@ -391,79 +364,79 @@ Detalle de Cuenta | Banco Inacap
 
     <div class="col-md-6 col-lg-3">
 
-        <div class="card p-4 h-100 d-flex flex-column justify-content-between border">
+        <div class="card p-4 h-100">
 
-            <div>
+            <h4 class="fw-bold">
+                Tarjeta de Crédito
+            </h4>
 
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div class="icon-bubble icon-bubble-amber shadow-sm">
-                        <i class="bi bi-credit-card-2-front-fill"></i>
-                    </div>
-                    <span class="badge bg-light text-dark border">$1.200.000</span>
-                </div>
+            <p class="text-muted">
+                Producto de crédito para realizar compras
+                nacionales e internacionales.
+            </p>
 
-                <h5 class="fw-bold text-dark mb-1">
-                    Tarjeta de Crédito
-                </h5>
-
-                <p class="text-muted small">
-                    Cupo internacional, compras en cuotas sin interés y acumulación de puntos.
-                </p>
-
-                <div class="p-2 bg-light rounded-3 border mb-3 small">
-                    <span class="text-muted d-block">Renta mínima:</span>
-                    <strong class="text-dark">$1.200.000 mensuales</strong>
-                </div>
-
-            </div>
+            <p>
+                Renta mínima:
+                <strong>
+                    $1.200.000
+                </strong>
+            </p>
 
 
             {% if cuenta.tarjeta_credito_solicitada %}
 
-                <div class="alert alert-success mt-auto mb-0 py-2 px-3 small">
-                    <div class="fw-bold mb-1">
-                        <i class="bi bi-clock-history me-1"></i> Solicitud en Trámite
-                    </div>
-                    <span class="text-muted" style="font-size: 0.78rem;">
-                        Evaluación comercial en curso.
-                    </span>
+                <div class="alert alert-success mt-auto mb-0">
+
+                    Solicitud enviada.
+
+                    <br><br>
+
+                    Tu Tarjeta de Crédito está
+                    en proceso de evaluación.
+
                 </div>
+
 
             {% elif cuenta.puede_tarjeta_credito %}
 
-                <div class="mt-auto">
+                <div class="alert alert-success">
 
-                    <div class="alert alert-success py-2 px-3 small mb-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-award-fill text-success fs-5"></i>
-                        <span>¡Pre-aprobada para ti!</span>
-                    </div>
-
-                    <form
-                        method="POST"
-                        action="{% url 'solicitar_tarjeta_credito' cuenta.id %}">
-
-                        {% csrf_token %}
-
-                        <button
-                            type="submit"
-                            class="btn btn-corporate w-100 btn-sm d-inline-flex justify-content-center align-items-center gap-2">
-                            <i class="bi bi-send-check"></i>
-                            Solicitar Tarjeta
-                        </button>
-
-                    </form>
+                    Cumples los requisitos para solicitar
+                    una Tarjeta de Crédito.
 
                 </div>
 
+
+                <form
+                    method="POST"
+                    action="{% url 'solicitar_tarjeta_credito' cuenta.id %}"
+                    class="mt-auto">
+
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-inacap w-100">
+
+                        Solicitar Tarjeta de Crédito
+
+                    </button>
+
+                </form>
+
+
             {% else %}
 
-                <div class="alert alert-secondary mt-auto mb-0 py-2 px-3 small">
-                    <div class="fw-bold mb-1">
-                        <i class="bi bi-lock-fill me-1"></i> No disponible
-                    </div>
-                    <span class="text-muted" style="font-size: 0.78rem;">
-                        {{ cuenta.estado_tarjeta_credito }}
-                    </span>
+                <div class="alert alert-secondary mt-auto mb-0">
+
+                    <strong>
+                        No disponible actualmente.
+                    </strong>
+
+                    <br><br>
+
+                    {{ cuenta.estado_tarjeta_credito }}
+
                 </div>
 
             {% endif %}
@@ -479,32 +452,31 @@ Detalle de Cuenta | Banco Inacap
      INFORMACIÓN DE EVALUACIÓN
 ===================================================== -->
 
-<div class="card p-4 mb-4 border bg-white shadow-sm">
+<div class="card p-4 mt-5">
 
     <div class="row align-items-center">
 
         <div class="col-md-8">
 
-            <div class="d-flex align-items-center gap-2 mb-1 text-primary">
-                <i class="bi bi-calculator fs-4"></i>
-                <h5 class="fw-bold mb-0 text-dark">
-                    Parámetros de Evaluación Comercial
-                </h5>
-            </div>
+            <h4 class="fw-bold">
+                Evaluación de productos
+            </h4>
 
-            <p class="text-muted small mb-0">
-                La asignación y preaprobación de productos bancarios se actualiza automáticamente con cada modificación en la renta mensual del cliente.
+            <p class="text-muted mb-0">
+                Los productos disponibles se calculan automáticamente
+                según la renta mensual y el tipo de cuenta.
             </p>
 
         </div>
 
+
         <div class="col-md-4 text-md-end mt-3 mt-md-0">
 
-            <span class="text-muted small d-block">
+            <span class="text-muted">
                 Renta mensual registrada
             </span>
 
-            <h3 class="fw-bold text-dark font-monospace mb-0">
+            <h3 class="fw-bold">
                 ${{ cuenta.sueldo_formateado }}
             </h3>
 
@@ -512,6 +484,58 @@ Detalle de Cuenta | Banco Inacap
 
     </div>
 
+
+    <hr>
+
+
+    <small class="text-muted">
+
+        Los requisitos de renta utilizados corresponden
+        a reglas académicas definidas exclusivamente
+        para este proyecto.
+
+    </small>
+
 </div>
+
+
+<!-- =====================================================
+     ACCIONES
+===================================================== -->
+
+<div class="mt-4 d-flex gap-2 flex-wrap">
+
+    <a
+        href="{% url 'editar_cuenta' cuenta.id %}"
+        class="btn btn-dark-custom">
+
+        Editar información
+
+    </a>
+
+
+    {% if user.is_superuser %}
+
+        <a
+            href="{% url 'listar_cuentas' %}"
+            class="btn btn-secondary">
+
+            Administración
+
+        </a>
+
+    {% endif %}
+
+
+    <a
+        href="{% url 'inicio' %}"
+        class="btn btn-outline-secondary">
+
+        Volver al inicio
+
+    </a>
+
+</div>
+
 
 {% endblock %}
