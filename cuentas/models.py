@@ -1,6 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, RegexValidator
+from django.core.validators import (
+    MinValueValidator,
+    MaxValueValidator,
+    RegexValidator,
+    MinLengthValidator,
+    MaxLengthValidator,
+)
 from django.core.exceptions import ValidationError
 
 from datetime import date
@@ -120,6 +126,7 @@ class CuentaBancaria(models.Model):
     RENTA_MIN_CORRIENTE = Decimal("600000")
     RENTA_MIN_LINEA_CREDITO = Decimal("900000")
     RENTA_MIN_TARJETA_CREDITO = Decimal("1200000")
+    RENTA_MAXIMA = Decimal("50000000")
 
 
     # =====================================================
@@ -175,7 +182,15 @@ class CuentaBancaria(models.Model):
     # =====================================================
 
     titular = models.CharField(
-        max_length=100,
+        max_length=50,
+        validators=[
+            MinLengthValidator(3, message="El nombre debe tener al menos 3 caracteres."),
+            MaxLengthValidator(50, message="El nombre no puede exceder los 50 caracteres."),
+            RegexValidator(
+                regex=r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$",
+                message="El nombre solo debe contener letras y espacios."
+            )
+        ],
         verbose_name="Nombre completo"
     )
 
@@ -203,8 +218,11 @@ class CuentaBancaria(models.Model):
     )
 
     correo = models.EmailField(
-        max_length=150,
+        max_length=60,
         unique=True,
+        validators=[
+            MaxLengthValidator(60, message="El correo no puede superar los 60 caracteres.")
+        ],
         verbose_name="Correo electrónico"
     )
 
@@ -213,7 +231,11 @@ class CuentaBancaria(models.Model):
         decimal_places=0,
         default=0,
         validators=[
-            MinValueValidator(0)
+            MinValueValidator(0, message="La renta mensual no puede ser negativa."),
+            MaxValueValidator(
+                Decimal("50000000"),
+                message="La renta mensual no puede superar los $50.000.000 CLP."
+            )
         ],
         verbose_name="Renta mensual"
     )
@@ -299,6 +321,26 @@ class CuentaBancaria(models.Model):
                     "Para abrir una Cuenta Corriente "
                     "se requiere una renta mensual "
                     "mínima de $600.000."
+            })
+
+        # ---------------------------------------------
+        # NOMBRE COMPLETO
+        # ---------------------------------------------
+
+        if self.titular:
+            partes = self.titular.strip().split()
+            if len(partes) < 2:
+                raise ValidationError({
+                    "titular": "Debe ingresar al menos un nombre y un apellido."
+                })
+
+        # ---------------------------------------------
+        # RENTA MENSUAL MÁXIMA
+        # ---------------------------------------------
+
+        if self.sueldo_mensual and self.sueldo_mensual > self.RENTA_MAXIMA:
+            raise ValidationError({
+                "sueldo_mensual": "La renta mensual no puede superar los $50.000.000 CLP."
             })
 
 

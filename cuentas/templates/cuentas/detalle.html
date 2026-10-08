@@ -1,541 +1,396 @@
 {% extends 'cuentas/base.html' %}
 
 {% block title %}
-Mi Cuenta
+Mi Cuenta | Banco Inacap
 {% endblock %}
 
 
 {% block contenido %}
 
 <!-- =====================================================
-     BIENVENIDA
+     BANNER EJECUTIVO Y ESTADO
 ===================================================== -->
 
-<div class="mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
 
-    <h1 class="fw-bold">
-        Hola, {{ cuenta.titular }}
-    </h1>
+    <div>
 
-    <p class="text-muted">
-        Revisa tu cuenta, saldo y productos bancarios disponibles.
-    </p>
+        <div class="d-inline-flex align-items-center gap-2 mb-2 px-3 py-1 bg-white border rounded-pill shadow-sm">
+            <span class="pulse-dot pulse-dot-green"></span>
+            <small class="fw-bold text-dark" style="letter-spacing: 0.3px;">PORTAL CLIENTE OPERATIVO</small>
+        </div>
+
+        <h1 class="fw-bold display-6 mb-1 text-dark">
+            Hola, {{ cuenta.titular }}
+        </h1>
+
+        <p class="text-muted mb-0 fs-6">
+            Supervisa tu saldo, información de cuenta y productos bancarios habilitados.
+        </p>
+
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+
+        <a
+            href="{% url 'editar_cuenta' cuenta.id %}"
+            class="btn btn-outline-dark d-inline-flex align-items-center gap-2">
+            <i class="bi bi-pencil-square"></i>
+            Editar Información
+        </a>
+
+        {% if user.is_superuser %}
+            <a
+                href="{% url 'listar_cuentas' %}"
+                class="btn btn-dark-custom d-inline-flex align-items-center gap-2">
+                <i class="bi bi-shield-lock"></i>
+                Panel Admin
+            </a>
+        {% endif %}
+
+    </div>
 
 </div>
 
 
 <!-- =====================================================
-     RESUMEN DE LA CUENTA
+     MÓDULO CENTRAL SIMÉTRICO (TARJETA BLACK + RESUMEN FINANCIERO)
 ===================================================== -->
 
-<div class="card dashboard-card p-4 mb-5">
+<div class="row g-4 align-items-stretch mb-5">
 
-    <div class="row align-items-center">
+    <!-- Tarjeta Digital del Cliente -->
+    <div class="col-lg-5">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                        Tarjeta Digital
+                    </span>
 
-        <div class="col-md-8">
-
-            <span class="text-muted">
-                Producto actual
-            </span>
-
-            <h4 class="fw-bold mt-1">
-                {{ cuenta.get_tipo_cuenta_display }}
-            </h4>
-
-            <h3 class="fw-bold mt-3">
-                Cuenta N° {{ cuenta.numero_cuenta }}
-            </h3>
-
-            <div class="row mt-3">
-
-                <div class="col-md-6">
-
-                    <p class="mb-1">
-                        RUT:
-                        <strong>
-                            {{ cuenta.rut }}
-                        </strong>
-                    </p>
-
-                    <p class="mb-1">
-                        Teléfono:
-                        <strong>
-                            {{ cuenta.telefono }}
-                        </strong>
-                    </p>
-
+                    {% if cuenta.estado == "ACTIVA" %}
+                        <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2" style="font-size: 0.72rem;">
+                            Activa
+                        </span>
+                    {% elif cuenta.estado == "BLOQUEADA" %}
+                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle py-1 px-2" style="font-size: 0.72rem;">
+                            Bloqueada
+                        </span>
+                    {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle py-1 px-2" style="font-size: 0.72rem;">
+                            Cerrada
+                        </span>
+                    {% endif %}
                 </div>
 
+                <div class="d-flex justify-content-center my-3">
+                    <div class="virtual-bank-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-white letter-spacing-1 fs-5">BANCO INACAP</strong>
+                                <div class="text-white-50 small" style="font-size: 0.72rem; letter-spacing: 1px;">
+                                    {{ cuenta.get_tipo_cuenta_display|upper }}
+                                </div>
+                            </div>
+                            <div class="text-white opacity-75 fs-4">
+                                <i class="bi bi-wifi"></i>
+                            </div>
+                        </div>
 
-                <div class="col-md-6">
+                        <div class="my-3">
+                            <span class="card-chip"></span>
+                        </div>
 
-                    <p class="mb-1">
-                        Correo:
-                        <strong>
-                            {{ cuenta.correo }}
-                        </strong>
-                    </p>
+                        <div>
+                            <div class="card-number-display mb-2">
+                                {{ cuenta.numero_cuenta|slice:"0:4" }} {{ cuenta.numero_cuenta|slice:"4:8" }} {{ cuenta.numero_cuenta|slice:"8:12" }}
+                            </div>
 
-                    <p class="mb-0">
-
-                        Estado:
-
-                        {% if cuenta.estado == "ACTIVA" %}
-
-                            <span class="badge bg-success">
-                                Activa
-                            </span>
-
-                        {% elif cuenta.estado == "BLOQUEADA" %}
-
-                            <span class="badge bg-warning text-dark">
-                                Bloqueada
-                            </span>
-
-                        {% else %}
-
-                            <span class="badge bg-secondary">
-                                Cerrada
-                            </span>
-
-                        {% endif %}
-
-                    </p>
-
+                            <div class="d-flex justify-content-between align-items-end text-white">
+                                <div style="max-width: 70%;">
+                                    <div class="text-white-50" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px;">Titular</div>
+                                    <div class="fw-semibold small text-truncate">{{ cuenta.titular|upper }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="text-white-50" style="font-size: 0.65rem; text-transform: uppercase;">Estado</div>
+                                    <span class="badge {% if cuenta.estado == 'ACTIVA' %}bg-success{% else %}bg-warning text-dark{% endif %} py-1 px-2" style="font-size: 0.70rem;">
+                                        {{ cuenta.estado }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
+            <div class="d-flex justify-content-end align-items-center text-muted small pt-3 border-top">
+                <span><i class="bi bi-bank text-primary me-1"></i> Red Redbanc Chile</span>
+            </div>
         </div>
+    </div>
 
+    <!-- Resumen Financiero y Datos de Cuenta -->
+    <div class="col-lg-7">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                        Resumen Financiero
+                    </span>
+                    <span class="kpi-badge kpi-badge-blue">
+                        Cuenta N° {{ cuenta.numero_cuenta }}
+                    </span>
+                </div>
 
-        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+                <!-- Saldo Disponible Destacado -->
+                <div class="p-4 bg-light rounded-3 border mb-4">
+                    <span class="text-muted small fw-semibold text-uppercase" style="letter-spacing: 0.5px;">
+                        Saldo Disponible
+                    </span>
+                    <div class="d-flex align-items-baseline gap-2 mt-1">
+                        <h2 class="display-6 fw-bold text-dark mb-0">
+                            ${{ cuenta.saldo_formateado }}
+                        </h2>
+                        <span class="text-muted small">CLP</span>
+                    </div>
+                </div>
 
-            <span class="text-muted">
-                Saldo disponible
-            </span>
+                <!-- Ficha de Datos del Titular -->
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border">
+                            <span class="text-muted small d-block mb-1">RUT</span>
+                            <strong class="text-dark">{{ cuenta.rut }}</strong>
+                        </div>
+                    </div>
 
-            <h2 class="fw-bold mt-1">
-                ${{ cuenta.saldo_formateado }}
-            </h2>
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border">
+                            <span class="text-muted small d-block mb-1">Teléfono Móvil</span>
+                            <strong class="text-dark">+56 {{ cuenta.telefono }}</strong>
+                        </div>
+                    </div>
 
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border">
+                            <span class="text-muted small d-block mb-1">Correo Electrónico</span>
+                            <strong class="text-dark text-truncate d-block" title="{{ cuenta.correo }}">{{ cuenta.correo }}</strong>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-white rounded-3 border">
+                            <span class="text-muted small d-block mb-1">Renta Mensual Declarada</span>
+                            <strong class="text-dark">${{ cuenta.sueldo_formateado }} CLP</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4 flex-wrap gap-2">
+                <span class="text-muted small">
+                    <i class="bi bi-calendar3 me-1"></i> Fecha de Apertura: {{ cuenta.fecha_apertura|date:"d/m/Y" }}
+                </span>
+                <a href="{% url 'editar_cuenta' cuenta.id %}" class="btn btn-sm btn-outline-secondary d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-pencil"></i> Actualizar Contacto
+                </a>
+            </div>
         </div>
-
     </div>
 
 </div>
 
 
 <!-- =====================================================
-     PRODUCTOS
+     CATÁLOGO DE PRODUCTOS (4 COLUMNAS SIMÉTRICAS Y NIVELADAS)
 ===================================================== -->
 
-<div class="mb-4">
-
-    <h2 class="fw-bold">
-        Productos para ti
-    </h2>
-
-    <p class="text-muted">
-        Revisamos los productos disponibles según tu tipo de cuenta
-        y renta mensual registrada.
-    </p>
-
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h3 class="fw-bold mb-1 text-dark">
+            Productos y Beneficios
+        </h3>
+        <p class="text-muted small mb-0">
+            Evaluación comercial inmediata según tu tipo de cuenta y renta mensual registrada.
+        </p>
+    </div>
 </div>
 
+<div class="row g-4 mb-4 align-items-stretch">
 
-<div class="row g-4">
-
-
-    <!-- =================================================
-         CUENTA DÉBITO
-    ================================================== -->
-
-    <div class="col-md-6 col-lg-3">
-
-        <div class="card p-4 h-100">
-
-            <h4 class="fw-bold">
-                Cuenta Débito
-            </h4>
-
-            <p class="text-muted">
-                Permite recibir depósitos, realizar transferencias
-                y efectuar compras.
-            </p>
-
-            <p>
-                <strong>
-                    Sin renta mínima
-                </strong>
-            </p>
-
-
-            {% if cuenta.tipo_cuenta == "DEBITO" %}
-
-                <div class="alert alert-success mt-auto mb-0">
-                    Este es tu producto actual.
+    <!-- Cuenta Débito -->
+    <div class="col-lg-3 col-md-6">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: #0f172a;">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Cuenta Débito</h5>
+                        <small class="text-muted">Sin renta mínima</small>
+                    </div>
                 </div>
 
-            {% else %}
+                <p class="text-muted small mt-3 mb-0">
+                    Permite recibir transferencias, compras físicas y pagos en línea con fondos disponibles.
+                </p>
+            </div>
 
-                <div class="alert alert-success mt-auto mb-0">
-                    Producto disponible.
-                </div>
-
-            {% endif %}
-
+            <div class="mt-4 pt-3 border-top">
+                {% if cuenta.tipo_cuenta == "DEBITO" %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle w-100 py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-check-circle-fill"></i> Tu Producto Actual
+                    </span>
+                {% else %}
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle w-100 py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-check-circle"></i> Disponible
+                    </span>
+                {% endif %}
+            </div>
         </div>
-
     </div>
 
-
-    <!-- =================================================
-         CUENTA CORRIENTE
-    ================================================== -->
-
-    <div class="col-md-6 col-lg-3">
-
-        <div class="card p-4 h-100">
-
-            <h4 class="fw-bold">
-                Cuenta Corriente
-            </h4>
-
-            <p class="text-muted">
-                Cuenta bancaria con acceso a productos
-                y beneficios adicionales.
-            </p>
-
-            <p>
-                Renta mínima:
-                <strong>
-                    $600.000
-                </strong>
-            </p>
-
-
-            {% if cuenta.tiene_cuenta_corriente %}
-
-                <div class="alert alert-success mt-auto mb-0">
-
-                    <strong>
-                        Este es tu producto actual.
-                    </strong>
-
-                    <br><br>
-
-                    Ya cuentas con una Cuenta Corriente.
-
+    <!-- Cuenta Corriente -->
+    <div class="col-lg-3 col-md-6">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: #0284c7;">
+                        <i class="bi bi-credit-card-2-front"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Cuenta Corriente</h5>
+                        <small class="text-muted">Renta mín: $600.000</small>
+                    </div>
                 </div>
 
+                <p class="text-muted small mt-3 mb-0">
+                    Cuenta bancaria completa con chequera, transferencias preferenciales y acceso a crédito.
+                </p>
+            </div>
 
-            {% elif cuenta.puede_cuenta_corriente %}
-
-                <div class="alert alert-success">
-
-                    <strong>
-                        ¡Producto disponible!
-                    </strong>
-
-                    <br><br>
-
-                    Cumples los requisitos para optar
-                    a una Cuenta Corriente.
-
-                </div>
-
-
-                <form
-                    method="POST"
-                    action="{% url 'solicitar_cuenta_corriente' cuenta.id %}"
-                    class="mt-auto">
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="btn btn-inacap w-100">
-
-                        Solicitar Cuenta Corriente
-
-                    </button>
-
-                </form>
-
-
-            {% else %}
-
-                <div class="alert alert-secondary mt-auto mb-0">
-
-                    <strong>
-                        No disponible actualmente.
-                    </strong>
-
-                    <br><br>
-
-                    {{ cuenta.estado_cuenta_corriente }}
-
-                </div>
-
-            {% endif %}
-
+            <div class="mt-4 pt-3 border-top">
+                {% if cuenta.tiene_cuenta_corriente %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle w-100 py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-check-circle-fill"></i> Tu Producto Actual
+                    </span>
+                {% elif cuenta.puede_cuenta_corriente %}
+                    <form method="POST" action="{% url 'solicitar_cuenta_corriente' cuenta.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-corporate w-100 btn-sm py-2 d-flex align-items-center justify-content-center gap-1">
+                            <i class="bi bi-plus-lg"></i> Solicitar Cuenta
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="p-2 bg-light border rounded text-center small text-muted">
+                        {{ cuenta.estado_cuenta_corriente }}
+                    </div>
+                {% endif %}
+            </div>
         </div>
-
     </div>
 
-
-    <!-- =================================================
-         LÍNEA DE CRÉDITO
-    ================================================== -->
-
-    <div class="col-md-6 col-lg-3">
-
-        <div class="card p-4 h-100">
-
-            <h4 class="fw-bold">
-                Línea de Crédito
-            </h4>
-
-            <p class="text-muted">
-                Beneficio asociado exclusivamente a una
-                Cuenta Corriente para cubrir necesidades
-                de corto plazo.
-            </p>
-
-            <p>
-                Renta mínima:
-                <strong>
-                    $900.000
-                </strong>
-            </p>
-
-
-            {% if cuenta.tiene_linea_credito %}
-
-                <div class="alert alert-success mt-auto mb-0">
-
-                    Línea de Crédito incluida
-                    en tu Cuenta Corriente.
-
+    <!-- Línea de Crédito -->
+    <div class="col-lg-3 col-md-6">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: #16a34a;">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Línea de Crédito</h5>
+                        <small class="text-muted">Renta mín: $900.000</small>
+                    </div>
                 </div>
 
+                <p class="text-muted small mt-3 mb-0">
+                    Monto de respaldo automático asignado a tu Cuenta Corriente ante imprevistos de liquidez.
+                </p>
+            </div>
 
-            {% elif cuenta.tipo_cuenta != "CORRIENTE" %}
-
-                <div class="alert alert-secondary mt-auto mb-0">
-
-                    <strong>
-                        No disponible.
-                    </strong>
-
-                    <br><br>
-
-                    Para acceder a una Línea de Crédito
-                    primero debes tener una Cuenta Corriente.
-
-                </div>
-
-
-            {% else %}
-
-                <div class="alert alert-secondary mt-auto mb-0">
-
-                    <strong>
-                        No disponible actualmente.
-                    </strong>
-
-                    <br><br>
-
-                    {{ cuenta.estado_linea_credito }}
-
-                </div>
-
-            {% endif %}
-
+            <div class="mt-4 pt-3 border-top">
+                {% if cuenta.tiene_linea_credito %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle w-100 py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-check-circle-fill"></i> Activa en Cuenta
+                    </span>
+                {% elif cuenta.tipo_cuenta != "CORRIENTE" %}
+                    <div class="p-2 bg-light border rounded text-center small text-muted">
+                        Requiere Cuenta Corriente
+                    </div>
+                {% else %}
+                    <div class="p-2 bg-light border rounded text-center small text-muted">
+                        {{ cuenta.estado_linea_credito }}
+                    </div>
+                {% endif %}
+            </div>
         </div>
-
     </div>
 
-
-    <!-- =================================================
-         TARJETA DE CRÉDITO
-    ================================================== -->
-
-    <div class="col-md-6 col-lg-3">
-
-        <div class="card p-4 h-100">
-
-            <h4 class="fw-bold">
-                Tarjeta de Crédito
-            </h4>
-
-            <p class="text-muted">
-                Producto de crédito para realizar compras
-                nacionales e internacionales.
-            </p>
-
-            <p>
-                Renta mínima:
-                <strong>
-                    $1.200.000
-                </strong>
-            </p>
-
-
-            {% if cuenta.tarjeta_credito_solicitada %}
-
-                <div class="alert alert-success mt-auto mb-0">
-
-                    Solicitud enviada.
-
-                    <br><br>
-
-                    Tu Tarjeta de Crédito está
-                    en proceso de evaluación.
-
+    <!-- Tarjeta de Crédito -->
+    <div class="col-lg-3 col-md-6">
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
+            <div>
+                <div class="d-flex align-items-center gap-2 mb-2">
+                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: var(--inacap-red);">
+                        <i class="bi bi-credit-card-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Tarjeta Crédito</h5>
+                        <small class="text-muted">Renta mín: $1.200.000</small>
+                    </div>
                 </div>
 
+                <p class="text-muted small mt-3 mb-0">
+                    Tarjeta internacional con compras en cuotas, acumulación de beneficios y compras seguras.
+                </p>
+            </div>
 
-            {% elif cuenta.puede_tarjeta_credito %}
-
-                <div class="alert alert-success">
-
-                    Cumples los requisitos para solicitar
-                    una Tarjeta de Crédito.
-
-                </div>
-
-
-                <form
-                    method="POST"
-                    action="{% url 'solicitar_tarjeta_credito' cuenta.id %}"
-                    class="mt-auto">
-
-                    {% csrf_token %}
-
-                    <button
-                        type="submit"
-                        class="btn btn-inacap w-100">
-
-                        Solicitar Tarjeta de Crédito
-
-                    </button>
-
-                </form>
-
-
-            {% else %}
-
-                <div class="alert alert-secondary mt-auto mb-0">
-
-                    <strong>
-                        No disponible actualmente.
-                    </strong>
-
-                    <br><br>
-
-                    {{ cuenta.estado_tarjeta_credito }}
-
-                </div>
-
-            {% endif %}
-
+            <div class="mt-4 pt-3 border-top">
+                {% if cuenta.tarjeta_credito_solicitada %}
+                    <span class="badge bg-info-subtle text-info border border-info-subtle w-100 py-2 d-flex align-items-center justify-content-center gap-1">
+                        <i class="bi bi-hourglass-split"></i> En Evaluación
+                    </span>
+                {% elif cuenta.puede_tarjeta_credito %}
+                    <form method="POST" action="{% url 'solicitar_tarjeta_credito' cuenta.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-corporate w-100 btn-sm py-2 d-flex align-items-center justify-content-center gap-1">
+                            <i class="bi bi-plus-lg"></i> Solicitar Tarjeta
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="p-2 bg-light border rounded text-center small text-muted">
+                        {{ cuenta.estado_tarjeta_credito }}
+                    </div>
+                {% endif %}
+            </div>
         </div>
-
     </div>
 
 </div>
 
 
 <!-- =====================================================
-     INFORMACIÓN DE EVALUACIÓN
+     ACCIONES GLOBALES DE NAVEGACIÓN
 ===================================================== -->
 
-<div class="card p-4 mt-5">
+<div class="d-flex gap-2 flex-wrap pt-2 justify-content-end">
 
-    <div class="row align-items-center">
-
-        <div class="col-md-8">
-
-            <h4 class="fw-bold">
-                Evaluación de productos
-            </h4>
-
-            <p class="text-muted mb-0">
-                Los productos disponibles se calculan automáticamente
-                según la renta mensual y el tipo de cuenta.
-            </p>
-
-        </div>
-
-
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-
-            <span class="text-muted">
-                Renta mensual registrada
-            </span>
-
-            <h3 class="fw-bold">
-                ${{ cuenta.sueldo_formateado }}
-            </h3>
-
-        </div>
-
-    </div>
-
-
-    <hr>
-
-
-    <small class="text-muted">
-
-        Los requisitos de renta utilizados corresponden
-        a reglas académicas definidas exclusivamente
-        para este proyecto.
-
-    </small>
-
-</div>
-
-
-<!-- =====================================================
-     ACCIONES
-===================================================== -->
-
-<div class="mt-4 d-flex gap-2 flex-wrap">
+    {% if user.is_superuser %}
+        <a
+            href="{% url 'inicio' %}"
+            class="btn btn-outline-secondary d-inline-flex align-items-center gap-1">
+            <i class="bi bi-arrow-left"></i> Volver al Dashboard
+        </a>
+    {% endif %}
 
     <a
         href="{% url 'editar_cuenta' cuenta.id %}"
-        class="btn btn-dark-custom">
-
-        Editar información
-
-    </a>
-
-
-    {% if user.is_superuser %}
-
-        <a
-            href="{% url 'listar_cuentas' %}"
-            class="btn btn-secondary">
-
-            Administración
-
-        </a>
-
-    {% endif %}
-
-
-    <a
-        href="{% url 'inicio' %}"
-        class="btn btn-outline-secondary">
-
-        Volver al inicio
-
+        class="btn btn-dark-custom d-inline-flex align-items-center gap-1">
+        <i class="bi bi-pencil-square"></i> Editar Información
     </a>
 
 </div>
-
 
 {% endblock %}

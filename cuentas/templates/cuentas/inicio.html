@@ -52,248 +52,211 @@ Panel Bancario | Banco Inacap
 
 
 <!-- =====================================================
-     MÉTRICAS BANCARIAS
+     MÉTRICAS BANCARIAS (3 COLUMNAS SIMÉTRICAS)
 ===================================================== -->
 
-<div class="row g-4 mb-5">
+<div class="row g-4 mb-4">
 
-    <div class="col-md-6">
-
-        <div class="card p-4 h-100">
-
+    <div class="col-lg-4 col-md-6">
+        <div class="card executive-kpi-card p-4 h-100">
             <div class="d-flex justify-content-between align-items-start">
-
                 <div>
-
-                    <span class="text-muted fw-semibold text-uppercase small" style="letter-spacing: 0.5px;">
-                        Cartera Total
-                    </span>
-
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                            Cartera Total
+                        </span>
+                        <span class="kpi-badge kpi-badge-blue">Clientes</span>
+                    </div>
                     <h2 class="dashboard-number mt-2 mb-1">
                         {{ total_cuentas }}
                     </h2>
-
                     <p class="text-muted small mb-0 mt-2">
-                        <i class="bi bi-people me-1 text-primary"></i> Cuentas totales registradas en el sistema
+                        <i class="bi bi-people me-1 text-primary"></i> Total de cuentas registradas
                     </p>
-
                 </div>
-
-                <div class="icon-bubble icon-bubble-blue shadow-sm">
+                <div class="trust-icon">
                     <i class="bi bi-wallet2"></i>
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-    <div class="col-md-6">
-
-        <div class="card dashboard-card p-4 h-100">
-
+    <div class="col-lg-4 col-md-6">
+        <div class="card executive-kpi-card p-4 h-100" style="border-top: 4px solid #16a34a;">
             <div class="d-flex justify-content-between align-items-start">
-
                 <div>
-
-                    <span class="text-muted fw-semibold text-uppercase small" style="letter-spacing: 0.5px;">
-                        Cuentas Operativas
-                    </span>
-
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                            Cuentas Activas
+                        </span>
+                        <span class="kpi-badge kpi-badge-green">Operativas</span>
+                    </div>
                     <h2 class="dashboard-number text-success mt-2 mb-1">
                         {{ cuentas_activas }}
                     </h2>
-
                     <p class="text-muted small mb-0 mt-2">
-                        <i class="bi bi-check2-circle me-1 text-success"></i> Cuentas activas con operaciones habilitadas
+                        <i class="bi bi-check2-circle me-1 text-success"></i> Habilitadas para transacciones
                     </p>
-
                 </div>
-
-                <div class="icon-bubble icon-bubble-green shadow-sm">
+                <div class="trust-icon" style="background: #14532d; color: #4ade80;">
                     <i class="bi bi-patch-check-fill"></i>
                 </div>
-
             </div>
-
         </div>
+    </div>
 
+    <div class="col-lg-4 col-md-12">
+        <div class="card executive-kpi-card p-4 h-100" style="border-top: 4px solid #0284c7;">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                            Cuentas Corrientes
+                        </span>
+                        <span class="kpi-badge" style="background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd;">Comercial</span>
+                    </div>
+                    <h2 class="dashboard-number mt-2 mb-1" style="color: #0284c7;">
+                        {{ cuentas_corrientes }}
+                    </h2>
+                    <p class="text-muted small mb-0 mt-2">
+                        <i class="bi bi-award me-1 text-info"></i> Con línea de crédito y cheques
+                    </p>
+                </div>
+                <div class="trust-icon" style="background: #0c4a6e; color: #38bdf8;">
+                    <i class="bi bi-credit-card-2-front-fill"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
 
 
 <!-- =====================================================
-     TARJETA BANCARIA VISUAL & ACCESOS RÁPIDOS
+     MÓDULO CENTRAL SIMÉTRICO (TARJETA + OPERACIONES)
 ===================================================== -->
 
-<div class="row g-4 mb-5">
+<div class="row g-4 align-items-stretch mb-4">
 
-    <!-- Mockup de Tarjeta Bancaria -->
+    <!-- Tarjeta Institucional -->
     <div class="col-lg-5">
-
-        <div class="virtual-bank-card h-100 p-4">
-
-            <div class="d-flex justify-content-between align-items-center">
-
-                <div>
-                    <strong class="text-white letter-spacing-1 fs-5">BANCO INACAP</strong>
-                    <div class="text-white-50 small" style="font-size: 0.72rem; letter-spacing: 1px;">CORPORATE PLATINUM</div>
-                </div>
-
-                <div class="text-white opacity-75 fs-4">
-                    <i class="bi bi-wifi"></i>
-                </div>
-
-            </div>
-
-
-            <div class="my-4">
-                <span class="card-chip"></span>
-            </div>
-
-
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
             <div>
-
-                <div class="card-number-display mb-3">
-                    •••• •••• •••• 9840
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                        Tarjeta Institucional
+                    </span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-1 px-2" style="font-size: 0.72rem;">
+                        Activa
+                    </span>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-end text-white">
+                <div class="d-flex justify-content-center my-3">
+                    <div class="virtual-bank-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-white letter-spacing-1 fs-5">BANCO INACAP</strong>
+                                <div class="text-white-50 small" style="font-size: 0.72rem; letter-spacing: 1px;">CORPORATE PLATINUM</div>
+                            </div>
+                            <div class="text-white opacity-75 fs-4">
+                                <i class="bi bi-wifi"></i>
+                            </div>
+                        </div>
 
-                    <div>
-                        <div class="text-white-50" style="font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.5px;">Titular del Producto</div>
-                        <div class="fw-semibold small">SISTEMA BANCARIO CHILE</div>
+                        <div class="my-3">
+                            <span class="card-chip"></span>
+                        </div>
+
+                        <div>
+                            <div class="card-number-display mb-2">
+                                •••• •••• •••• 9840
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-end text-white">
+                                <div>
+                                    <div class="text-white-50" style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.5px;">Titular del Producto</div>
+                                    <div class="fw-semibold small">SISTEMA BANCARIO CHILE</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="text-white-50" style="font-size: 0.65rem; text-transform: uppercase;">Estado</div>
+                                    <span class="badge bg-success py-1 px-2" style="font-size: 0.70rem;">Activa</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="text-end">
-                        <div class="text-white-50" style="font-size: 0.68rem; text-transform: uppercase;">Estado</div>
-                        <span class="badge bg-success py-1 px-2" style="font-size: 0.72rem;">Activa</span>
-                    </div>
-
                 </div>
-
             </div>
 
+            <div class="d-flex justify-content-end align-items-center text-muted small pt-3 border-top">
+                <span><i class="bi bi-check-circle-fill text-primary me-1"></i> Auditoría en Línea</span>
+            </div>
         </div>
-
     </div>
-
 
     <!-- Panel de Operaciones Centrales -->
     <div class="col-lg-7">
-
-        <div class="card p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
-
+        <div class="card p-4 h-100 d-flex flex-column justify-content-between shadow-sm">
             <div>
-
-                <div class="d-flex align-items-center gap-2 mb-2 text-primary">
-                    <i class="bi bi-shield-check fs-4"></i>
-                    <h4 class="fw-bold mb-0 text-dark">
-                        Gestión y Operaciones Bancarias
-                    </h4>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted fw-bold text-uppercase small" style="letter-spacing: 0.5px;">
+                        Operaciones de Cartera
+                    </span>
+                    <span class="text-muted small">Panel de Control</span>
                 </div>
 
-                <p class="text-muted">
-                    Controle el ciclo de vida completo de las cuentas de clientes: aperturas, evaluación comercial automatizada de renta, actualización de antecedentes y bloqueos.
+                <h4 class="fw-bold mb-2 text-dark">
+                    Gestión de Clientes y Productos
+                </h4>
+
+                <p class="text-muted small mb-4">
+                    Administre el ciclo de vida de los clientes: aperturas inmediatas, evaluación comercial de rentas y supervisión del estado de cuentas.
                 </p>
 
-                <div class="row g-3 my-2">
-
+                <div class="row g-3">
                     <div class="col-sm-6">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <div class="fw-bold text-dark small mb-1">
-                                <i class="bi bi-check-circle-fill text-success me-1"></i> Cuentas Débito
+                        <a href="{% url 'crear_cuenta' %}" class="text-decoration-none">
+                            <div class="p-3 bg-light rounded-3 border h-100" style="transition: all 0.2s ease;">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: var(--inacap-red);">
+                                        <i class="bi bi-person-plus-fill"></i>
+                                    </div>
+                                    <strong class="text-dark small">Apertura de Cuenta</strong>
+                                </div>
+                                <span class="text-muted small">Registrar un nuevo cliente en el sistema.</span>
                             </div>
-                            <span class="text-muted small">Apertura inmediata sin requisito de renta mínima.</span>
-                        </div>
+                        </a>
                     </div>
 
                     <div class="col-sm-6">
-                        <div class="p-3 bg-light rounded-3 border">
-                            <div class="fw-bold text-dark small mb-1">
-                                <i class="bi bi-award-fill text-primary me-1"></i> Líneas & Tarjetas
+                        <a href="{% url 'listar_cuentas' %}" class="text-decoration-none">
+                            <div class="p-3 bg-light rounded-3 border h-100" style="transition: all 0.2s ease;">
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <div class="trust-icon" style="width: 36px; height: 36px; font-size: 1rem; background: #0f172a;">
+                                        <i class="bi bi-table"></i>
+                                    </div>
+                                    <strong class="text-dark small">Cartera de Clientes</strong>
+                                </div>
+                                <span class="text-muted small">Consultar, editar y auditar cuentas.</span>
                             </div>
-                            <span class="text-muted small">Cálculo de productos según sueldo registrado.</span>
-                        </div>
+                        </a>
                     </div>
-
                 </div>
-
             </div>
 
-
-            <div class="d-flex gap-3 flex-wrap mt-4 pt-3 border-top">
-
+            <div class="d-flex gap-2 flex-wrap pt-3 border-top justify-content-end">
                 <a
                     href="{% url 'listar_cuentas' %}"
                     class="btn btn-dark-custom d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-table"></i>
+                    <i class="bi bi-list-ul"></i>
                     Administrar Cartera
                 </a>
 
                 <a
                     href="{% url 'crear_cuenta' %}"
                     class="btn btn-corporate d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-person-plus-fill"></i>
+                    <i class="bi bi-plus-lg"></i>
                     Abrir Nueva Cuenta
                 </a>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     GARANTÍAS Y NORMAS DE SEGURIDAD
-===================================================== -->
-
-<div class="row g-3">
-
-    <div class="col-md-4">
-        <div class="card p-3 border-0 bg-white shadow-sm">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-bubble icon-bubble-blue" style="width: 44px; height: 44px; font-size: 1.2rem;">
-                    <i class="bi bi-lock-fill"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-0 text-dark">Seguridad Bancaria</h6>
-                    <small class="text-muted">Cifrado de transacciones 256-bit</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card p-3 border-0 bg-white shadow-sm">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-bubble icon-bubble-green" style="width: 44px; height: 44px; font-size: 1.2rem;">
-                    <i class="bi bi-cpu-fill"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-0 text-dark">Evaluación Automática</h6>
-                    <small class="text-muted">Calificación en tiempo real de productos</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-4">
-        <div class="card p-3 border-0 bg-white shadow-sm">
-            <div class="d-flex align-items-center gap-3">
-                <div class="icon-bubble icon-bubble-amber" style="width: 44px; height: 44px; font-size: 1.2rem;">
-                    <i class="bi bi-file-earmark-check-fill"></i>
-                </div>
-                <div>
-                    <h6 class="fw-bold mb-0 text-dark">Auditoría Transaccional</h6>
-                    <small class="text-muted">Historial de registros sincronizado</small>
-                </div>
             </div>
         </div>
     </div>
