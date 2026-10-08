@@ -54,5 +54,23 @@ class CuentaBancariaSerializer(
                     'mínima de $600.000.'
             })
 
+        if sueldo_mensual and sueldo_mensual > 50000000:
+            raise serializers.ValidationError({
+                'sueldo_mensual':
+                    'La renta mensual no puede superar los $50.000.000 CLP.'
+            })
+
+        titular = datos.get(
+            'titular',
+            getattr(self.instance, 'titular', '')
+        )
+
+        if titular:
+            partes = titular.strip().split()
+            if len(partes) < 2:
+                raise serializers.ValidationError({
+                    'titular':
+                        'Debe ingresar al menos un nombre y un apellido.'
+                })
 
         return datos

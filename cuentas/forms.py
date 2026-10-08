@@ -33,8 +33,8 @@ class CrearCuentaForm(forms.ModelForm):
 
             'titular': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Nombre completo',
-                'maxlength': '100',
+                'placeholder': 'Nombre y Apellido',
+                'maxlength': '50',
                 'minlength': '3',
                 'autocomplete': 'name'
             }),
@@ -43,7 +43,8 @@ class CrearCuentaForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': '12.345.678-5',
                 'maxlength': '12',
-                'minlength': '8'
+                'minlength': '8',
+                'oninput': "let v=this.value.toUpperCase().replace(/[^0-9K.-]/g,'');let d=(v.match(/[0-9]/g)||[]).length;if(d<7){v=v.replace(/K/g,'');}else{v=v.replace(/K(?=[0-9.-])/g,'');let i=v.indexOf('K');if(i!==-1)v=v.slice(0,i+1);}this.value=v;"
             }),
 
             'telefono': forms.TextInput(attrs={
@@ -52,22 +53,24 @@ class CrearCuentaForm(forms.ModelForm):
                 'maxlength': '9',
                 'minlength': '9',
                 'inputmode': 'numeric',
-                'autocomplete': 'tel'
+                'autocomplete': 'tel',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '');"
             }),
 
             'correo': forms.EmailInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'correo@ejemplo.cl',
-                'maxlength': '150',
+                'maxlength': '60',
                 'autocomplete': 'email'
             }),
 
             'sueldo_mensual': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0',
-                'max': '999999999999',
+                'max': '50000000',
                 'step': '1',
-                'placeholder': 'Ej: 750000'
+                'placeholder': 'Ej: 750000',
+                'oninput': "if(this.value.length > 8) this.value = this.value.slice(0, 8);"
             }),
 
             'tipo_cuenta': forms.Select(attrs={
@@ -90,13 +93,67 @@ class CrearCuentaForm(forms.ModelForm):
             'sueldo_mensual': (
                 'Cuenta Débito: sin renta mínima. '
                 'Cuenta Corriente: mínimo $600.000. '
-                'Línea de Crédito: disponible desde $900.000.'
+                'Línea de Crédito: disponible desde $900.000. '
+                'Tope máximo: $50.000.000.'
             ),
 
             'tipo_cuenta': (
                 'Selecciona el producto que deseas solicitar.'
             ),
         }
+
+        error_messages = {
+            'titular': {
+                'max_length': 'El nombre no puede superar los 50 caracteres.',
+                'min_length': 'El nombre debe tener al menos 3 caracteres.',
+            },
+            'correo': {
+                'max_length': 'El correo no puede superar los 60 caracteres.',
+                'invalid': 'Ingrese una dirección de correo válida.',
+            },
+            'sueldo_mensual': {
+                'max_value': 'La renta mensual no puede superar los $50.000.000 CLP.',
+                'min_value': 'La renta mensual no puede ser negativa.',
+            },
+        }
+
+    def clean_titular(self):
+        titular = self.cleaned_data.get('titular', '').strip()
+        if len(titular) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres.')
+        if len(titular) > 50:
+            raise forms.ValidationError('El nombre no puede superar los 50 caracteres.')
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$", titular):
+            raise forms.ValidationError('El nombre solo debe contener letras y espacios.')
+        partes = titular.split()
+        if len(partes) < 2:
+            raise forms.ValidationError('Ingrese al menos un nombre y un apellido.')
+        return titular.title()
+
+    def clean_correo(self):
+        correo = self.cleaned_data.get('correo', '').strip().lower()
+        if len(correo) < 5:
+            raise forms.ValidationError('El correo debe tener al menos 5 caracteres.')
+        if len(correo) > 60:
+            raise forms.ValidationError('El correo no puede superar los 60 caracteres.')
+        patron_correo = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(patron_correo, correo):
+            raise forms.ValidationError('Ingrese un formato de correo válido (ej: usuario@ejemplo.cl).')
+        if CuentaBancaria.objects.filter(correo=correo).exists():
+            raise forms.ValidationError('Este correo ya se encuentra registrado.')
+        if User.objects.filter(email=correo).exists():
+            raise forms.ValidationError('Ya existe un usuario con este correo.')
+        return correo
+
+    def clean_sueldo_mensual(self):
+        sueldo = self.cleaned_data.get('sueldo_mensual')
+        if sueldo is None:
+            return 0
+        if sueldo < 0:
+            raise forms.ValidationError('La renta mensual no puede ser negativa.')
+        if sueldo > 50000000:
+            raise forms.ValidationError('La renta mensual no puede superar los $50.000.000 CLP.')
+        return sueldo
 
 
 # =========================================================
@@ -124,33 +181,36 @@ class EditarCuentaForm(forms.ModelForm):
 
             'titular': forms.TextInput(attrs={
                 'class': 'form-control',
-                'maxlength': '100',
+                'maxlength': '50',
                 'minlength': '3'
             }),
 
             'rut': forms.TextInput(attrs={
                 'class': 'form-control',
                 'maxlength': '12',
-                'minlength': '8'
+                'minlength': '8',
+                'oninput': "let v=this.value.toUpperCase().replace(/[^0-9K.-]/g,'');let d=(v.match(/[0-9]/g)||[]).length;if(d<7){v=v.replace(/K/g,'');}else{v=v.replace(/K(?=[0-9.-])/g,'');let i=v.indexOf('K');if(i!==-1)v=v.slice(0,i+1);}this.value=v;"
             }),
 
             'telefono': forms.TextInput(attrs={
                 'class': 'form-control',
                 'maxlength': '9',
                 'minlength': '9',
-                'inputmode': 'numeric'
+                'inputmode': 'numeric',
+                'oninput': "this.value = this.value.replace(/[^0-9]/g, '');"
             }),
 
             'correo': forms.EmailInput(attrs={
                 'class': 'form-control',
-                'maxlength': '150'
+                'maxlength': '60'
             }),
 
             'sueldo_mensual': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': '0',
-                'max': '999999999999',
-                'step': '1'
+                'max': '50000000',
+                'step': '1',
+                'oninput': "if(this.value.length > 8) this.value = this.value.slice(0, 8);"
             }),
 
             'tipo_cuenta': forms.Select(attrs={
@@ -182,9 +242,62 @@ class EditarCuentaForm(forms.ModelForm):
 
             'sueldo_mensual': (
                 'Cuenta Corriente: mínimo $600.000. '
-                'Línea de Crédito: mínimo $900.000.'
+                'Línea de Crédito: mínimo $900.000. '
+                'Tope máximo: $50.000.000.'
             ),
         }
+
+        error_messages = {
+            'titular': {
+                'max_length': 'El nombre no puede superar los 50 caracteres.',
+                'min_length': 'El nombre debe tener al menos 3 caracteres.',
+            },
+            'correo': {
+                'max_length': 'El correo no puede superar los 60 caracteres.',
+                'invalid': 'Ingrese una dirección de correo válida.',
+            },
+            'sueldo_mensual': {
+                'max_value': 'La renta mensual no puede superar los $50.000.000 CLP.',
+                'min_value': 'La renta mensual no puede ser negativa.',
+            },
+        }
+
+    def clean_titular(self):
+        titular = self.cleaned_data.get('titular', '').strip()
+        if len(titular) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres.')
+        if len(titular) > 50:
+            raise forms.ValidationError('El nombre no puede superar los 50 caracteres.')
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$", titular):
+            raise forms.ValidationError('El nombre solo debe contener letras y espacios.')
+        partes = titular.split()
+        if len(partes) < 2:
+            raise forms.ValidationError('Ingrese al menos un nombre y un apellido.')
+        return titular.title()
+
+    def clean_correo(self):
+        correo = self.cleaned_data.get('correo', '').strip().lower()
+        if len(correo) < 5:
+            raise forms.ValidationError('El correo debe tener al menos 5 caracteres.')
+        if len(correo) > 60:
+            raise forms.ValidationError('El correo no puede superar los 60 caracteres.')
+        patron_correo = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(patron_correo, correo):
+            raise forms.ValidationError('Ingrese un formato de correo válido (ej: usuario@ejemplo.cl).')
+        existe_cuenta = CuentaBancaria.objects.filter(correo=correo).exclude(pk=self.instance.pk).exists()
+        if existe_cuenta:
+            raise forms.ValidationError('Este correo ya se encuentra registrado en otra cuenta.')
+        return correo
+
+    def clean_sueldo_mensual(self):
+        sueldo = self.cleaned_data.get('sueldo_mensual')
+        if sueldo is None:
+            return 0
+        if sueldo < 0:
+            raise forms.ValidationError('La renta mensual no puede ser negativa.')
+        if sueldo > 50000000:
+            raise forms.ValidationError('La renta mensual no puede superar los $50.000.000 CLP.')
+        return sueldo
 
 
 # =========================================================
@@ -194,13 +307,18 @@ class EditarCuentaForm(forms.ModelForm):
 class RegistroClienteForm(forms.Form):
 
     titular = forms.CharField(
-        max_length=100,
+        max_length=50,
         min_length=3,
         label='Nombre completo',
+        error_messages={
+            'max_length': 'El nombre no puede superar los 50 caracteres.',
+            'min_length': 'El nombre debe tener al menos 3 caracteres.',
+            'required': 'Ingrese su nombre completo.'
+        },
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Nombre completo',
-            'maxlength': '100',
+            'placeholder': 'Nombre y Apellido',
+            'maxlength': '50',
             'minlength': '3',
             'autocomplete': 'name'
         })
@@ -215,7 +333,8 @@ class RegistroClienteForm(forms.Form):
             'placeholder': '12.345.678-5',
             'maxlength': '12',
             'minlength': '8',
-            'autocomplete': 'username'
+            'autocomplete': 'username',
+            'oninput': "let v=this.value.toUpperCase().replace(/[^0-9K.-]/g,'');let d=(v.match(/[0-9]/g)||[]).length;if(d<7){v=v.replace(/K/g,'');}else{v=v.replace(/K(?=[0-9.-])/g,'');let i=v.indexOf('K');if(i!==-1)v=v.slice(0,i+1);}this.value=v;"
         })
     )
 
@@ -229,33 +348,46 @@ class RegistroClienteForm(forms.Form):
             'maxlength': '9',
             'minlength': '9',
             'inputmode': 'numeric',
-            'autocomplete': 'tel'
+            'autocomplete': 'tel',
+            'oninput': "this.value = this.value.replace(/[^0-9]/g, '');"
         })
     )
 
     correo = forms.EmailField(
-        max_length=150,
+        max_length=60,
         label='Correo electrónico',
+        error_messages={
+            'max_length': 'El correo no puede superar los 60 caracteres.',
+            'invalid': 'Ingrese una dirección de correo válida.',
+            'required': 'Ingrese su correo electrónico.'
+        },
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
             'placeholder': 'correo@ejemplo.cl',
-            'maxlength': '150',
+            'maxlength': '60',
             'autocomplete': 'email'
         })
     )
 
     sueldo_mensual = forms.DecimalField(
         min_value=0,
-        max_value=999999999999,
+        max_value=50000000,
         decimal_places=0,
         max_digits=12,
         label='Renta mensual',
+        error_messages={
+            'max_value': 'La renta mensual no puede superar los $50.000.000 CLP.',
+            'min_value': 'La renta mensual no puede ser negativa.',
+            'max_digits': 'El monto excede el número de dígitos permitido.',
+            'required': 'Ingrese su renta mensual.'
+        },
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': 'Ej: 750000',
             'min': '0',
-            'max': '999999999999',
-            'step': '1'
+            'max': '50000000',
+            'step': '1',
+            'oninput': "if(this.value.length > 8) this.value = this.value.slice(0, 8);"
         })
     )
 
@@ -308,12 +440,27 @@ class RegistroClienteForm(forms.Form):
         titular = self.cleaned_data['titular'].strip()
 
         if len(titular) < 3:
-
             raise forms.ValidationError(
                 'El nombre debe tener al menos 3 caracteres.'
             )
 
-        return titular
+        if len(titular) > 50:
+            raise forms.ValidationError(
+                'El nombre no puede superar los 50 caracteres.'
+            )
+
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$", titular):
+            raise forms.ValidationError(
+                'El nombre solo debe contener letras y espacios.'
+            )
+
+        partes = titular.split()
+        if len(partes) < 2:
+            raise forms.ValidationError(
+                'Ingrese al menos un nombre y un apellido.'
+            )
+
+        return titular.title()
 
 
     # -----------------------------------------------------
@@ -388,10 +535,20 @@ class RegistroClienteForm(forms.Form):
             .lower()
         )
 
-        if len(correo) > 150:
-
+        if len(correo) < 5:
             raise forms.ValidationError(
-                'El correo no puede superar los 150 caracteres.'
+                'El correo debe tener al menos 5 caracteres.'
+            )
+
+        if len(correo) > 60:
+            raise forms.ValidationError(
+                'El correo no puede superar los 60 caracteres.'
+            )
+
+        patron_correo = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if not re.match(patron_correo, correo):
+            raise forms.ValidationError(
+                'Ingrese un formato de correo válido (ej: usuario@ejemplo.cl).'
             )
 
         if CuentaBancaria.objects.filter(
@@ -427,10 +584,10 @@ class RegistroClienteForm(forms.Form):
                 'La renta mensual no puede ser negativa.'
             )
 
-        if sueldo > 999999999999:
+        if sueldo > 50000000:
 
             raise forms.ValidationError(
-                'La renta mensual supera el máximo permitido.'
+                'La renta mensual no puede superar los $50.000.000 CLP.'
             )
 
         return sueldo
